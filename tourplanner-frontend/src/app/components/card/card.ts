@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, Input} from '@angular/core';
 
 export interface TourProps {
     id: number;
@@ -16,7 +16,9 @@ export interface TourProps {
     templateUrl: './card.html',
     styleUrls: ['./card.css'],
 })
+
 export class CardComponent {
+  @Input() tour!: TourProps;
     // id: number;
     // title: string;
     // description: string;
@@ -24,7 +26,7 @@ export class CardComponent {
     // to: string;
     // distance: number;
     // duration: string;
-    
+
     // constructor({ id, title, description, from, to, distance, duration }: TourProps) {
     //     this.id = id;
     //     this.title = title;

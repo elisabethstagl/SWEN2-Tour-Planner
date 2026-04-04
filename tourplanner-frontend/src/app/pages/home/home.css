@@ -1,0 +1,37 @@
+.home-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+}
+
+.map-div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.map-div img {
+  max-width: 100%;
+  height: auto;
+}
+
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .home-layout {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  .list-header {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+}
+

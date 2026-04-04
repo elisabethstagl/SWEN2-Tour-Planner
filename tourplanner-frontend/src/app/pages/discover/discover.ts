@@ -1,5 +1,5 @@
 import { Component } from "@angular/core";
-import { CardComponent } from "../card/card";
+import { CardComponent } from "../../components/card/card";
 
 @Component({
     selector: 'app-discover',

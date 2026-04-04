@@ -1,0 +1,58 @@
+<mat-toolbar class="header-toolbar">
+  <div class="logo" (click)="goHome()">
+    <img src="/assets/logo.png" alt="Logo"/>
+  </div>
+
+  <span class="spacer"></span>
+
+  <!-- Desktop and iPad -->
+  <nav class="nav desktop-nav">
+    <a
+      class="register-button"
+      matButton="tonal"
+      routerLink="/register"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }">
+      Register
+    </a>
+
+    <a
+      class="login-button"
+      matButton="tonal"
+      routerLink="/"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }">
+      Login
+    </a>
+
+    <a
+      matButton="tonal"
+      routerLink="/discover"
+      routerLinkActive="active">
+      Discover
+    </a>
+  </nav>
+
+  <!-- Mobile -->
+  <button
+    class="mobile-menu-button"
+    mat-icon-button
+    [matMenuTriggerFor]="mobileMenu"
+    aria-label="Open navigation menu">
+    <mat-icon>menu</mat-icon>
+  </button>
+
+  <mat-menu #mobileMenu="matMenu">
+    <button mat-menu-item routerLink="/">
+      <span>Register</span>
+    </button>
+
+    <button mat-menu-item routerLink="/">
+      <span>Login</span>
+    </button>
+
+    <button mat-menu-item routerLink="/discover">
+      <span>Discover</span>
+    </button>
+  </mat-menu>
+</mat-toolbar>
