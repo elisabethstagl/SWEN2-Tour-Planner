@@ -26,9 +26,28 @@
     </a>
 
     <a
+      class="profile-button"
+      matButton="tonal"
+      routerLink="/profile"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }">
+      Profile
+    </a>
+
+    <a
+      class="add-tour-button"
+      matButton="tonal"
+      routerLink="/new-tour"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }">
+      Add Tour
+    </a>
+
+    <a
       matButton="tonal"
       routerLink="/discover"
-      routerLinkActive="active">
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }">
       Discover
     </a>
   </nav>
@@ -43,12 +62,20 @@
   </button>
 
   <mat-menu #mobileMenu="matMenu">
-    <button mat-menu-item routerLink="/">
+    <button mat-menu-item routerLink="/register">
       <span>Register</span>
     </button>
 
     <button mat-menu-item routerLink="/">
       <span>Login</span>
+    </button>
+
+    <button mat-menu-item routerLink="/register">
+      <span>Profile</span>
+    </button>
+
+    <button mat-menu-item routerLink="/register">
+      <span>Add Tour</span>
     </button>
 
     <button mat-menu-item routerLink="/discover">

@@ -1,34 +1,20 @@
-<div class="home-layout">
+<app-layout>
+  <div left-header>
+    <h2>Public Tours</h2>
 
-  <!-- left section -->
-  <div class="list">
+    <button class="filter-button" matFab extended>
+      Filter
+      <mat-icon iconPositionEnd>filter_list</mat-icon>
+    </button>
+  </div>
 
-    <!-- headline and filter icon -->
-    <div class="list-header">
-      <h2>Public Tours</h2>
-
-<!--      <button mat-icon-button aria-label="Filter">-->
-<!--        <mat-icon>filter_list</mat-icon>-->
-<!--      </button>-->
-
-      <button class="filter-button" matFab extended>
-        Filter
-        <mat-icon iconPositionEnd >filter_list</mat-icon>
-      </button>
-    </div>
-
-    <!-- Tour list -->
+  <div left-content>
     @for (tour of tours; track tour.id) {
       <app-tour-list-item [tour]="tour"></app-tour-list-item>
     } @empty {
       <p>No tours available.</p>
     }
-
   </div>
 
-  <!-- right section -->
-  <div class="map-div">
-    <img src="/assets/map.png" alt="Map">
-  </div>
-
-</div>
+  <img right-content src="/assets/map.png" alt="Map">
+</app-layout>

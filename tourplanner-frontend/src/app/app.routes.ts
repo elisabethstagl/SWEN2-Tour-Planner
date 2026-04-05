@@ -3,6 +3,8 @@ import {HomeComponent} from './pages/home/home';
 import {DiscoverComponent} from './pages/discover/discover';
 import {TourDetail} from './pages/tour-detail/tour-detail';
 import {Register} from './pages/register/register';
+import {Profile} from './pages/profile/profile';
+import {NewTour} from './pages/new-tour/new-tour';
 
 export const routes: Routes = [
   {
@@ -12,6 +14,14 @@ export const routes: Routes = [
   {
     path: 'register',
     component: Register
+  },
+  {
+    path: 'profile',
+    component: Profile
+  },
+  {
+    path: 'new-tour',
+    component: NewTour
   },
   {
     path: 'discover',

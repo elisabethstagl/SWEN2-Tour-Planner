@@ -3,6 +3,7 @@ import {CardComponent} from '../../components/card/card';
 import {MatFabButton, MatIconButton} from '@angular/material/button';
 import {MatIcon} from '@angular/material/icon';
 import {TourListItem} from '../../components/tour-list-item/tour-list-item';
+import {Layout} from '../../layout/layout';
 
 @Component({
   selector: 'app-home',
@@ -12,7 +13,8 @@ import {TourListItem} from '../../components/tour-list-item/tour-list-item';
   imports: [
     MatIcon,
     MatFabButton,
-    TourListItem
+    TourListItem,
+    Layout
   ]
 })
 export class HomeComponent {
