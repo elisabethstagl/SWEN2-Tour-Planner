@@ -1,6 +1,5 @@
 import {Routes} from '@angular/router';
 import {HomeComponent} from './pages/home/home';
-import {DiscoverComponent} from './pages/discover/discover';
 import {TourDetail} from './pages/tour-detail/tour-detail';
 import {Register} from './pages/register/register';
 import {Profile} from './pages/profile/profile';
@@ -27,10 +26,6 @@ export const routes: Routes = [
   {
     path: 'new-tour-log',
     component: NewTourLog
-  },
-  {
-    path: 'discover',
-    component: DiscoverComponent
   },
   {
     path: 'tour-detail/:id',

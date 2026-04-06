@@ -1,15 +1,6 @@
-import {Component, Input} from '@angular/core';
+import {Component, inject, Input} from '@angular/core';
 import {Router} from '@angular/router';
-
-export interface Tour {
-  id: number;
-  title: string;
-  description: string;
-  from: string;
-  to: string;
-  distance: number;
-  duration: string;
-}
+import {Tour} from '../../models/tour';
 
 @Component({
   selector: 'app-tour-list-item',
@@ -20,9 +11,9 @@ export interface Tour {
 })
 
 export class TourListItem {
-  @Input() tour!: Tour;
+  @Input({ required: true }) tour!: Tour;
 
-  constructor(private router: Router) {}
+  private readonly router = inject(Router);
 
   openTour() {
     this.router.navigate(['/tour-detail', this.tour.id]);

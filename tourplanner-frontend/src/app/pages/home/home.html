@@ -1,5 +1,5 @@
 <app-layout>
-    <h2 left-header>Public Tours</h2>
+    <h2 left-header>Tours</h2>
 
     <button left-header class="filter-button" matFab extended>
       Filter
@@ -7,9 +7,9 @@
     </button>
 
   <div left-content>
-    @for (tour of tours; track tour.id) {
+    @for (tour of tours(); track tour.id) {
       <app-tour-list-item [tour]="tour"></app-tour-list-item>
-    } @empty {
+    }@empty {
       <p>No tours available.</p>
     }
   </div>

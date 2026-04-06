@@ -1,10 +1,43 @@
-<p>tour-detail works!</p>
+<app-layout>
+  @if (tour(); as selectedTour) {
+    <ng-container left-header>
+      <h2>{{ selectedTour.name }}</h2>
+    </ng-container>
+  }
 
-<a
-  class="add-tour-log-button"
-  matButton="tonal"
-  routerLink="/new-tour-log"
-  routerLinkActive="active"
-  [routerLinkActiveOptions]="{ exact: true }">
-  + New Log
-</a>
+  @if (tour(); as selectedTour) {
+    <ng-container left-content>
+      <app-tour-details-card
+        [tour]="selectedTour"
+        [popularity]="popularity()">
+      </app-tour-details-card>
+
+      <section class="logs-section">
+        <h3>Tour Logs</h3>
+
+        @if (logs().length > 0) {
+          @for (log of logs(); track log.id) {
+            <app-tour-log-card [log]="log"></app-tour-log-card>
+          }
+        } @else {
+          <p>No logs yet.</p>
+        }
+      </section>
+
+      <a
+        class="add-tour-log-button"
+        matButton="tonal"
+        [routerLink]="['/new-tour-log']">
+        + New Log
+      </a>
+    </ng-container>
+  } @else {
+    <ng-container left-content>
+      <p>Tour not found.</p>
+    </ng-container>
+  }
+
+  @if (tour(); as selectedTour) {
+    <img right-content [src]="selectedTour.mapUrl || '/assets/map.png'" alt="Map">
+  }
+</app-layout>
