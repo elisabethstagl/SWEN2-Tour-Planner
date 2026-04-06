@@ -1,1 +1,45 @@
-<p>new-tour works!</p>
+<app-layout>
+  <h2 left-header>New Tour</h2>
+
+  <mat-form-field left-content>
+    <mat-label>Tour Name</mat-label>
+    <input matInput>
+  </mat-form-field>
+
+  <mat-form-field left-content>
+    <mat-label>Description</mat-label>
+    <textarea matInput></textarea>
+  </mat-form-field>
+
+  <mat-form-field left-content>
+    <mat-label>From</mat-label>
+    <input matInput>
+  </mat-form-field>
+
+  <mat-form-field left-content>
+    <mat-label>To</mat-label>
+    <input matInput>
+  </mat-form-field>
+
+  <mat-form-field left-content>
+    <mat-label>Transport Type</mat-label>
+    <mat-select>
+      <mat-option value="option-walking">Walking</mat-option>
+      <mat-option value="option-bike">Bike</mat-option>
+      <mat-option value="option-car">Car</mat-option>
+      <mat-option value="option-public-transport">Public Transport</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field left-content>
+    <mat-label>Distance (in km)</mat-label>
+    <input matInput placeholder="4,50">
+  </mat-form-field>
+
+  <mat-form-field left-content>
+    <mat-label>Estimated Time</mat-label>
+    <input matInput placeholder="04:45">
+  </mat-form-field>
+
+  <img right-content src="/assets/map.png" alt="route-information-map">
+</app-layout>

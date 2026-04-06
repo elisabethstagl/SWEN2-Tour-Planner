@@ -1,12 +1,10 @@
 <app-layout>
-  <div left-header>
-    <h2>Public Tours</h2>
+    <h2 left-header>Public Tours</h2>
 
-    <button class="filter-button" matFab extended>
+    <button left-header class="filter-button" matFab extended>
       Filter
       <mat-icon iconPositionEnd>filter_list</mat-icon>
     </button>
-  </div>
 
   <div left-content>
     @for (tour of tours; track tour.id) {

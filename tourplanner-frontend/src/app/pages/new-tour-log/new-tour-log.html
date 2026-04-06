@@ -1,0 +1,63 @@
+<app-layout>
+  <h2 left-header>New Tour Log</h2>
+
+  <div left-content class="form-grid">
+    <mat-form-field>
+      <mat-label>Choose a date</mat-label>
+      <input matInput [matDatepicker]="datePicker">
+      <mat-hint>MM/DD/YYYY</mat-hint>
+      <mat-datepicker-toggle matIconSuffix [for]="datePicker"></mat-datepicker-toggle>
+      <mat-datepicker #datePicker></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Pick a time</mat-label>
+      <input matInput [matTimepicker]="timePicker">
+      <mat-timepicker-toggle matIconSuffix [for]="timePicker"></mat-timepicker-toggle>
+      <mat-timepicker #timePicker></mat-timepicker>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Total Distance (in km)</mat-label>
+      <input matInput placeholder="4,50">
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Total Time</mat-label>
+      <input matInput placeholder="04:45">
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Difficulty</mat-label>
+      <mat-select>
+        <mat-option value="option-easy">Easy</mat-option>
+        <mat-option value="option-medium">Medium</mat-option>
+        <mat-option value="option-hard">Hard</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <div class="rating">
+      <p class="rating-label">Rating</p>
+      <div class="rating-stars">
+        @for (star of stars; track star) {
+          <mat-icon
+            (click)="setRating(star)"
+            [class.filled]="star <= rating()"
+          >
+            {{ star <= rating() ? 'star' : 'star_border' }}
+          </mat-icon>
+        }
+      </div>
+    </div>
+  </div>
+
+  <mat-form-field left-content class="comment-field">
+    <mat-label>Comment</mat-label>
+    <textarea matInput rows="4"></textarea>
+  </mat-form-field>
+
+  <button left-content class="new-tour-log-button" matButton="tonal">Add Tour Log</button>
+
+  <img right-content class="new-log-image" src="/assets/Momo-Appa.png" alt="random-image">
+
+</app-layout>

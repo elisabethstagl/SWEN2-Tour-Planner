@@ -5,6 +5,7 @@ import {TourDetail} from './pages/tour-detail/tour-detail';
 import {Register} from './pages/register/register';
 import {Profile} from './pages/profile/profile';
 import {NewTour} from './pages/new-tour/new-tour';
+import {NewTourLog} from './pages/new-tour-log/new-tour-log';
 
 export const routes: Routes = [
   {
@@ -22,6 +23,10 @@ export const routes: Routes = [
   {
     path: 'new-tour',
     component: NewTour
+  },
+  {
+    path: 'new-tour-log',
+    component: NewTourLog
   },
   {
     path: 'discover',

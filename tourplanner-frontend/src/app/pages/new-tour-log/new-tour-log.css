@@ -1,0 +1,69 @@
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.form-grid mat-form-field,
+.form-grid .rating {
+  width: 100%;
+}
+
+.comment-field {
+  grid-column: 1 / -1;
+}
+
+
+.rating {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 4px;
+}
+
+.rating-label {
+  margin: 0;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.rating-stars {
+  display: flex;
+  gap: 4px;
+  min-height: 20px;
+  align-items: center;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.42);
+}
+
+.rating-stars mat-icon {
+  cursor: pointer;
+}
+
+.rating-stars mat-icon.filled {
+  color: gold;
+}
+
+.new-tour-log-button {
+  max-width: 200px;
+}
+
+.new-log-image {
+  max-height: 600px;
+}
+
+
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .new-tour-log-button {
+    max-width: 100%;
+  }
+
+  .new-log-image {
+    display: none;
+  }
+
+}
