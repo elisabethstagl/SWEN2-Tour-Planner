@@ -5,6 +5,12 @@
     </ng-container>
   }
 
+  <app-edit-delete-buttons
+    left-header
+    (editClicked)="editTour()"
+    (deleteClicked)="deleteTour()">
+  </app-edit-delete-buttons>
+
   @if (tour(); as selectedTour) {
     <ng-container left-content>
       <app-tour-details-card
