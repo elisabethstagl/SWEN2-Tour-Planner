@@ -1,5 +1,5 @@
 import { Injectable, computed, signal } from '@angular/core';
-import {Tour} from './models/tour';
+import {Tour, TransportType} from './models/tour';
 import {TourLog} from './models/tour-log';
 
 @Injectable({
@@ -56,8 +56,11 @@ export class TourService {
     }
   ]);
 
+  private readonly _error = signal('');
   readonly tours = this._tours.asReadonly();
   readonly logs = this._logs.asReadonly();
+  readonly error = this._error.asReadonly();
+
 
   readonly totalTours = computed(() => this._tours().length);
 
@@ -71,8 +74,82 @@ export class TourService {
     );
   }
 
-  addTour(tour: Tour) {
+  addTour(input: {
+    userId: number;
+    name: string;
+    description: string;
+    from: string;
+    to: string;
+    transportType: TransportType;
+    distance: number;
+    estimatedTime: string;
+    mapUrl?: string;
+  }): number | null {
+    this._error.set('');
+
+    const name = input.name.trim();
+    const description = input.description.trim();
+    const from = input.from.trim();
+    const to = input.to.trim();
+    const estimatedTime = input.estimatedTime.trim();
+    const mapUrl = (input.mapUrl ?? '').trim();
+
+    if (name.length < 2) {
+      this._error.set('Tour name must be at least 2 characters.');
+      return null;
+    }
+
+    if (description.length < 2) {
+      this._error.set('Description must be at least 2 characters.');
+      return null;
+    }
+
+    if (from.length < 2) {
+      this._error.set('From must be at least 2 characters.');
+      return null;
+    }
+
+    if (to.length < 2) {
+      this._error.set('To must be at least 2 characters.');
+      return null;
+    }
+
+    if (input.distance <= 0) {
+      this._error.set('Distance must be greater than 0.');
+      return null;
+    }
+
+    if (estimatedTime.length === 0) {
+      this._error.set('Estimated time is required.');
+      return null;
+    }
+
+    const nextId =
+      this._tours().length > 0
+        ? Math.max(...this._tours().map(tour => tour.id)) + 1
+        : 1;
+
+    const tour: Tour = {
+      id: nextId,
+      userId: input.userId,
+      name,
+      description,
+      from,
+      to,
+      transportType: input.transportType,
+      distance: input.distance,
+      estimatedTime,
+      mapUrl: mapUrl || undefined,
+    };
+
     this._tours.update(tours => [...tours, tour]);
+    return nextId;
+  }
+
+  updateTour(updatedTour: Tour) {
+    this._tours.update(tours =>
+      tours.map(tour => tour.id === updatedTour.id ? updatedTour : tour)
+    );
   }
 
   addLog(log: TourLog) {
@@ -82,5 +159,9 @@ export class TourService {
   deleteTour(id: number) {
     this._tours.update(tours => tours.filter(tour => tour.id !== id));
     this._logs.update(logs => logs.filter(log => log.tourId !== id));
+  }
+
+  clearError() {
+    this._error.set('');
   }
 }

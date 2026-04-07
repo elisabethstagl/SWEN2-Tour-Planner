@@ -1,45 +1,121 @@
 <app-layout>
   <h2 left-header>New Tour</h2>
 
-  <mat-form-field left-content>
-    <mat-label>Tour Name</mat-label>
-    <input matInput>
-  </mat-form-field>
+  <div left-content class="field">
+    <mat-form-field>
+      <mat-label>Tour Name</mat-label>
+      <input
+        matInput
+        [ngModel]="name()"
+        (ngModelChange)="name.set($event); clearError()"
+      >
+    </mat-form-field>
+    @if (nameError()) {
+      <div class="field-error">{{ nameError() }}</div>
+    }
+  </div>
 
-  <mat-form-field left-content>
-    <mat-label>Description</mat-label>
-    <textarea matInput></textarea>
-  </mat-form-field>
+  <div left-content class="field">
+    <mat-form-field>
+      <mat-label>Description</mat-label>
+      <textarea
+        matInput
+        [ngModel]="description()"
+        (ngModelChange)="description.set($event); clearError()"
+      ></textarea>
+    </mat-form-field>
+    @if (descriptionError()) {
+      <div class="field-error">{{ descriptionError() }}</div>
+    }
+  </div>
 
-  <mat-form-field left-content>
-    <mat-label>From</mat-label>
-    <input matInput>
-  </mat-form-field>
+  <div left-content class="field">
+    <mat-form-field>
+      <mat-label>From</mat-label>
+      <input
+        matInput
+        [ngModel]="from()"
+        (ngModelChange)="from.set($event); clearError()"
+      >
+    </mat-form-field>
+    @if (fromError()) {
+      <div class="field-error">{{ fromError() }}</div>
+    }
+  </div>
 
-  <mat-form-field left-content>
-    <mat-label>To</mat-label>
-    <input matInput>
-  </mat-form-field>
+  <div left-content class="field">
+    <mat-form-field>
+      <mat-label>To</mat-label>
+      <input
+        matInput
+        [ngModel]="to()"
+        (ngModelChange)="to.set($event); clearError()"
+      >
+    </mat-form-field>
+    @if (toError()) {
+      <div class="field-error">{{ toError() }}</div>
+    }
+  </div>
 
-  <mat-form-field left-content>
-    <mat-label>Transport Type</mat-label>
-    <mat-select>
-      <mat-option value="option-walk">Walk</mat-option>
-      <mat-option value="option-bike">Bike</mat-option>
-      <mat-option value="option-car">Car</mat-option>
-      <mat-option value="option-public-transport">Public Transport</mat-option>
-    </mat-select>
-  </mat-form-field>
+  <div left-content class="field">
+    <mat-form-field>
+      <mat-label>Transport Type</mat-label>
+      <mat-select
+        [ngModel]="transportType()"
+        (ngModelChange)="transportType.set($event); clearError()"
+      >
+        @for (type of transportTypes; track type) {
+          <mat-option [value]="type">
+            {{ type }}
+          </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
 
-  <mat-form-field left-content>
-    <mat-label>Distance (in km)</mat-label>
-    <input matInput placeholder="4,50">
-  </mat-form-field>
+  <div left-content class="field">
+    <mat-form-field>
+      <mat-label>Distance (in km)</mat-label>
+      <input
+        matInput
+        [ngModel]="distance()"
+        (ngModelChange)="distance.set($event); clearError()"
+        placeholder="5.70"
+      >
+    </mat-form-field>
+    @if (distanceError()) {
+      <div class="field-error">{{ distanceError() }}</div>
+    }
+  </div>
 
-  <mat-form-field left-content>
-    <mat-label>Estimated Time</mat-label>
-    <input matInput placeholder="04:45">
-  </mat-form-field>
+  <div left-content class="field">
+    <mat-form-field>
+      <mat-label>Estimated Time</mat-label>
+      <input
+        matInput
+        [ngModel]="estimatedTime()"
+        (ngModelChange)="estimatedTime.set($event); clearError()"
+        placeholder="04:45"
+      >
+    </mat-form-field>
+    @if (estimatedTimeError()) {
+      <div class="field-error">{{ estimatedTimeError() }}</div>
+    }
+  </div>
+
+  @if (error()) {
+    <p left-content class="error-message">{{ error() }}</p>
+  }
+
+  <button
+    left-content
+    matButton="tonal"
+    type="button"
+    (click)="saveTour()"
+    [disabled]="!canSubmit()"
+  >
+    Save Tour
+  </button>
 
   <img right-content src="/assets/map.png" alt="route-information-map">
 </app-layout>
