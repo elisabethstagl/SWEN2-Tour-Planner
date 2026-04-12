@@ -24,7 +24,7 @@ export const routes: Routes = [
     component: NewTour
   },
   {
-    path: 'new-tour-log',
+    path: 'tour-detail/:id/new-log',
     component: NewTourLog
   },
   {

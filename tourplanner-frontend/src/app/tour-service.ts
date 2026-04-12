@@ -1,4 +1,4 @@
-import { Injectable, computed, signal } from '@angular/core';
+import {Injectable, computed, signal} from '@angular/core';
 import {Tour, TransportType} from './models/tour';
 import {TourLog} from './models/tour-log';
 
@@ -91,6 +91,7 @@ export class TourService {
     const description = input.description.trim();
     const from = input.from.trim();
     const to = input.to.trim();
+    const timeRegex = /^\d{1,2}:[0-5]\d$/;
     const estimatedTime = input.estimatedTime.trim();
     const mapUrl = (input.mapUrl ?? '').trim();
 
@@ -114,6 +115,11 @@ export class TourService {
       return null;
     }
 
+    if (input.distance === null || isNaN(Number(input.distance))) {
+      this._error.set('Distance must be a valid number.');
+      return null;
+    }
+
     if (input.distance <= 0) {
       this._error.set('Distance must be greater than 0.');
       return null;
@@ -121,6 +127,11 @@ export class TourService {
 
     if (estimatedTime.length === 0) {
       this._error.set('Estimated time is required.');
+      return null;
+    }
+
+    if (!timeRegex.test(estimatedTime)) {
+      this._error.set('Estimated time must be in format HH:MM (e.g., 4:24 or 12:05).');
       return null;
     }
 
@@ -152,8 +163,51 @@ export class TourService {
     );
   }
 
-  addLog(log: TourLog) {
-    this._logs.update(logs => [...logs, log]);
+  addLog(input: {
+    tourId: number;
+    date: string;
+    time: string;
+    comment: string;
+    difficulty: 'easy' | 'medium' | 'hard';
+    totalDistance: number;
+    totalTime: string;
+    rating: number;
+  }): number | null {
+    this._error.set('');
+
+    const timeRegex = /^\d{1,2}:[0-5]\d$/;
+    if (!timeRegex.test(input.totalTime.trim())) {
+      this._error.set('Duration must be in format H:mm (e.g., 4:30).');
+      return null;
+    }
+
+    if (!input.date) {
+      this._error.set('Date is required.');
+      return null;
+    }
+
+    if (input.totalDistance === null || isNaN(input.totalDistance) || input.totalDistance <= 0) {
+      this._error.set('Distance must be a valid number greater than 0.');
+      return null;
+    }
+
+    if (input.rating < 1 || input.rating > 5) {
+      this._error.set('Please provide a rating between 1 and 5.');
+      return null;
+    }
+
+    const nextId =
+      this._logs().length > 0
+        ? Math.max(...this._logs().map(log => log.id)) + 1
+        : 1;
+
+    const newLog: TourLog = {
+      ...input,
+      id: nextId
+    };
+
+    this._logs.update(logs => [...logs, newLog]);
+    return nextId;
   }
 
   deleteTour(id: number) {

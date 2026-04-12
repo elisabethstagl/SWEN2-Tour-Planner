@@ -34,6 +34,7 @@
   min-height: 20px;
   align-items: center;
   border-bottom: 1px solid rgba(0, 0, 0, 0.42);
+  margin-bottom: 10px;
 }
 
 .rating-stars mat-icon {

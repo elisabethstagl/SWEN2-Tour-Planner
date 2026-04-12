@@ -30,11 +30,9 @@
         }
       </section>
 
-      <a
-        class="add-tour-log-button"
-        matButton="tonal"
-        [routerLink]="['/new-tour-log']">
-        + New Log
+      <a class="add-tour-log-button"
+         matButton="tonal"
+         [routerLink]="['/tour-detail', selectedTour.id, 'new-log']">+ New Log
       </a>
     </ng-container>
   } @else {

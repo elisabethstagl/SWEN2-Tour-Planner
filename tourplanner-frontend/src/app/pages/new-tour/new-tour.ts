@@ -82,13 +82,18 @@ export class NewTour {
   readonly distanceError = computed<string | null>(() => {
     const v = this.distance();
     if (v === null) return 'Distance is required.';
+    if (isNaN(v)) {
+      return 'Please enter a valid number.';
+    }
     if (v <= 0) return 'Distance must be greater than 0.';
     return null;
   });
 
   readonly estimatedTimeError = computed<string | null>(() => {
     const v = this.estimatedTime().trim();
+    const timeRegex = /^\d{1,2}:[0-5]\d$/;
     if (v.length === 0) return 'Estimated time is required.';
+    if (!timeRegex.test(v)) return 'Use format H:mm (e.g. 4:24).';
     return null;
   });
 
