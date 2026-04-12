@@ -1,13 +1,13 @@
 <app-layout>
-  <h2 left-header>New Tour</h2>
+  <h2 left-header>{{ id() ? 'Edit Tour' : 'New Tour' }}</h2>
 
   <div left-content class="field">
     <mat-form-field>
       <mat-label>Tour Name</mat-label>
       <input
         matInput
-        [ngModel]="name()"
-        (ngModelChange)="name.set($event); clearError()"
+        [ngModel]="tourModel().name"
+        (ngModelChange)="updateField('name', $event)"
       >
     </mat-form-field>
     @if (nameError()) {
@@ -20,8 +20,8 @@
       <mat-label>Description</mat-label>
       <textarea
         matInput
-        [ngModel]="description()"
-        (ngModelChange)="description.set($event); clearError()"
+        [ngModel]="tourModel().description"
+        (ngModelChange)="updateField('description', $event)"
       ></textarea>
     </mat-form-field>
     @if (descriptionError()) {
@@ -34,8 +34,8 @@
       <mat-label>From</mat-label>
       <input
         matInput
-        [ngModel]="from()"
-        (ngModelChange)="from.set($event); clearError()"
+        [ngModel]="tourModel().from"
+        (ngModelChange)="updateField('from', $event)"
       >
     </mat-form-field>
     @if (fromError()) {
@@ -48,8 +48,8 @@
       <mat-label>To</mat-label>
       <input
         matInput
-        [ngModel]="to()"
-        (ngModelChange)="to.set($event); clearError()"
+        [ngModel]="tourModel().to"
+        (ngModelChange)="updateField('to', $event)"
       >
     </mat-form-field>
     @if (toError()) {
@@ -61,8 +61,8 @@
     <mat-form-field>
       <mat-label>Transport Type</mat-label>
       <mat-select
-        [ngModel]="transportType()"
-        (ngModelChange)="transportType.set($event); clearError()"
+        [ngModel]="tourModel().transportType"
+        (ngModelChange)="updateField('transportType', $event)"
       >
         @for (type of transportTypes; track type) {
           <mat-option [value]="type">
@@ -78,8 +78,8 @@
       <mat-label>Distance (in km)</mat-label>
       <input
         matInput
-        [ngModel]="distance()"
-        (ngModelChange)="distance.set($event); clearError()"
+        [ngModel]="tourModel().distance"
+        (ngModelChange)="updateField('distance', $event)"
         placeholder="5.70"
       >
     </mat-form-field>
@@ -93,9 +93,9 @@
       <mat-label>Estimated Time</mat-label>
       <input
         matInput
-        [ngModel]="estimatedTime()"
-        (ngModelChange)="estimatedTime.set($event); clearError()"
-        placeholder="04:45"
+        [ngModel]="tourModel().estimatedTime"
+        (ngModelChange)="updateField('estimatedTime', $event)"
+        placeholder="7 days or 04:45"
       >
     </mat-form-field>
     @if (estimatedTimeError()) {
@@ -114,7 +114,7 @@
     (click)="saveTour()"
     [disabled]="!canSubmit()"
   >
-    Save Tour
+    {{ id() ? 'Update Tour' : 'Save Tour' }}
   </button>
 
   <img right-content src="/assets/map.png" alt="route-information-map">

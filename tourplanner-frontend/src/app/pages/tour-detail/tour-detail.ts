@@ -41,12 +41,20 @@ export class TourDetail {
 
   readonly popularity = computed(() => this.logs().length);
 
-  editTour(): void {
+  onEditTour(): void {
     this.router.navigate(['/edit-tour', this.id()]);
   }
 
-  deleteTour(): void {
+  onDeleteTour(): void {
     this.tourService.deleteTour(this.id());
     this.router.navigate(['/tours']);
+  }
+
+  onEditLog(logId: number): void {
+    this.router.navigate(['/tour', this.id(), 'log', 'edit', logId]);
+  }
+
+  onDeleteLog(logId: number): void {
+    this.tourService.deleteLog(logId);
   }
 }

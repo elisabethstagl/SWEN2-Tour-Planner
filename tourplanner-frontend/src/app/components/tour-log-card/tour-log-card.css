@@ -1,14 +1,9 @@
 .log-card {
-  background: red;
-}
-
-.log-card {
   background: white;
   padding: 20px;
   border: 1px solid #ccc;
   border-radius: 10px;
   margin-bottom: 20px;
-  cursor: pointer;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   transition: background 0.2s ease;
 }

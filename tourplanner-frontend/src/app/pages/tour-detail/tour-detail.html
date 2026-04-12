@@ -7,8 +7,8 @@
 
   <app-edit-delete-buttons
     left-header
-    (editClicked)="editTour()"
-    (deleteClicked)="deleteTour()">
+    (editClicked)="onEditTour()"
+    (deleteClicked)="onDeleteTour()">
   </app-edit-delete-buttons>
 
   @if (tour(); as selectedTour) {
@@ -23,7 +23,11 @@
 
         @if (logs().length > 0) {
           @for (log of logs(); track log.id) {
-            <app-tour-log-card [log]="log"></app-tour-log-card>
+            <app-tour-log-card
+              [log]="log"
+              (edit)="onEditLog($event)"
+              (delete)="onDeleteLog($event)">
+            </app-tour-log-card>
           }
         } @else {
           <p>No logs yet.</p>

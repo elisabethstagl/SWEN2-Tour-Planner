@@ -3,8 +3,8 @@ import {HomeComponent} from './pages/home/home';
 import {TourDetail} from './pages/tour-detail/tour-detail';
 import {Register} from './pages/register/register';
 import {Profile} from './pages/profile/profile';
-import {NewTour} from './pages/new-tour/new-tour';
-import {NewTourLog} from './pages/new-tour-log/new-tour-log';
+import {TourForm} from './pages/tour-form/tour-form';
+import {TourLogForm} from './pages/tour-log-form/tour-log-form';
 
 export const routes: Routes = [
   {
@@ -21,11 +21,19 @@ export const routes: Routes = [
   },
   {
     path: 'new-tour',
-    component: NewTour
+    component: TourForm
   },
   {
-    path: 'tour-detail/:id/new-log',
-    component: NewTourLog
+    path: 'edit-tour/:id',
+    component: TourForm
+  },
+  {
+    path: 'tour-detail/:tourId/new-log',
+    component: TourLogForm
+  },
+  {
+    path: 'tour/:tourId/log/edit/:logId',
+    component: TourLogForm
   },
   {
     path: 'tour-detail/:id',

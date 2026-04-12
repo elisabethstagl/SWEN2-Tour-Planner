@@ -1,9 +1,13 @@
 <div class="log-card">
-  <p><strong>Date:</strong> {{ log.date }}</p>
-  <p><strong>Time:</strong> {{ log.time }}</p>
-  <p><strong>Difficulty:</strong> {{ log.difficulty }}</p>
-  <p><strong>Distance:</strong> {{ log.totalDistance }} km</p>
-  <p><strong>Total Time:</strong> {{ log.totalTime }}</p>
-  <p><strong>Rating:</strong> {{ log.rating }}/5</p>
-  <p><strong>Comment:</strong> {{ log.comment }}</p>
+  <app-edit-delete-buttons
+    (editClicked)="onEdit()"
+    (deleteClicked)="onDelete()">
+  </app-edit-delete-buttons>
+  <p><strong>Date:</strong> {{ log().date }}</p>
+  <p><strong>Time:</strong> {{ log().time }}</p>
+  <p><strong>Difficulty:</strong> {{ log().difficulty }}</p>
+  <p><strong>Distance:</strong> {{ log().totalDistance }} km</p>
+  <p><strong>Total Time:</strong> {{ log().totalTime }}</p>
+  <p><strong>Rating:</strong> {{ log().rating }}/5</p>
+  <p><strong>Comment:</strong> {{ log().comment }}</p>
 </div>

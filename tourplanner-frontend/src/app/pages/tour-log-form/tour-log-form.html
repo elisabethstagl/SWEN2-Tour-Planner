@@ -1,59 +1,53 @@
 <app-layout>
-  <h2 left-header>New Tour Log</h2>
+  <h2 left-header>{{ logId() ? 'Edit Tour Log' : 'New Tour Log' }}</h2>
 
   <div left-content class="form-grid">
     <div class="field">
       <mat-form-field>
         <mat-label>Choose a date</mat-label>
-        <input matInput [matDatepicker]="datePicker" [ngModel]="date()"
-               (ngModelChange)="date.set($event); clearError()">
+        <input matInput [matDatepicker]="datePicker" [ngModel]="pickerDate()"
+               (ngModelChange)="updateDate($event)">
         <mat-datepicker-toggle matIconSuffix [for]="datePicker"></mat-datepicker-toggle>
         <mat-datepicker #datePicker></mat-datepicker>
       </mat-form-field>
-      @if (dateError()) {
-        <div class="field-error">{{ dateError() }}</div>
-      }
+      @if (dateError()) { <div class="field-error">{{ dateError() }}</div> }
     </div>
 
     <div class="field">
       <mat-form-field>
         <mat-label>Pick a time</mat-label>
-        <input matInput [matTimepicker]="timePicker" [ngModel]="time()"
-               (ngModelChange)="time.set($event); clearError()">
+        <input matInput [matTimepicker]="timePicker" [ngModel]="pickerTime()"
+               (ngModelChange)="updateTime($event)">
         <mat-timepicker-toggle matIconSuffix [for]="timePicker"></mat-timepicker-toggle>
         <mat-timepicker #timePicker></mat-timepicker>
       </mat-form-field>
-      @if (timeError()) {
-        <div class="field-error">{{ timeError() }}</div>
-      }
+      @if (timeError()) { <div class="field-error">{{ timeError() }}</div> }
     </div>
 
     <div class="field">
       <mat-form-field>
         <mat-label>Total Distance (km)</mat-label>
-        <input matInput [ngModel]="distance()" (ngModelChange)="distance.set($event); clearError()"
+        <input matInput [ngModel]="logModel().totalDistance"
+               (ngModelChange)="updateField('totalDistance', $event)"
                placeholder="4.50">
       </mat-form-field>
-      @if (distanceError()) {
-        <div class="field-error">{{ distanceError() }}</div>
-      }
+      @if (distanceError()) { <div class="field-error">{{ distanceError() }}</div> }
     </div>
 
     <div class="field">
       <mat-form-field>
         <mat-label>Duration</mat-label>
-        <input matInput [ngModel]="totalTime()" (ngModelChange)="totalTime.set($event); clearError()"
-               placeholder="04:45">
+        <input matInput [ngModel]="logModel().totalTime"
+               (ngModelChange)="updateField('totalTime', $event)"
+               placeholder="7 days or 04:45">
       </mat-form-field>
-      @if (totalTimeError()) {
-        <div class="field-error">{{ totalTimeError() }}</div>
-      }
+      @if (totalTimeError()) { <div class="field-error">{{ totalTimeError() }}</div> }
     </div>
 
     <div class="field">
       <mat-form-field>
         <mat-label>Difficulty</mat-label>
-        <mat-select [ngModel]="difficulty()" (ngModelChange)="difficulty.set($event); clearError()">
+        <mat-select [ngModel]="logModel().difficulty" (ngModelChange)="updateField('difficulty', $event)">
           <mat-option value="easy">Easy</mat-option>
           <mat-option value="medium">Medium</mat-option>
           <mat-option value="hard">Hard</mat-option>
@@ -65,12 +59,12 @@
       <p class="rating-label">Rating</p>
       <div class="rating-stars">
         @for (star of stars; track star) {
-          <mat-icon (click)="setRating(star)" [class.filled]="star <= rating()">
-            {{ star <= rating() ? 'star' : 'star_border' }}
+          <mat-icon (click)="setRating(star)" [class.filled]="star <= logModel().rating">
+            {{ star <= logModel().rating ? 'star' : 'star_border' }}
           </mat-icon>
         }
       </div>
-      @if (rating() === 0) {
+      @if (logModel().rating === 0) {
         <div class="field-error">Please rate the tour.</div>
       }
     </div>
@@ -79,7 +73,8 @@
   <div left-content class="field">
     <mat-form-field>
       <mat-label>Comment</mat-label>
-      <textarea matInput [ngModel]="comment()" (ngModelChange)="comment.set($event); clearError()"></textarea>
+      <textarea matInput [ngModel]="logModel().comment"
+                (ngModelChange)="updateField('comment', $event)"></textarea>
     </mat-form-field>
   </div>
 
@@ -92,7 +87,7 @@
           matButton="tonal"
           [disabled]="!canSubmit()"
           (click)="saveLog()">
-    + New Log
+    {{ logId() ? 'Update Log' : '+ New Log' }}
   </button>
 
   <img right-content class="new-log-image" src="/assets/Momo-Appa.png" alt="random-image">

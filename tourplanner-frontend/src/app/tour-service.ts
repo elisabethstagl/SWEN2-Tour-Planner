@@ -61,99 +61,49 @@ export class TourService {
   readonly logs = this._logs.asReadonly();
   readonly error = this._error.asReadonly();
 
-
-  readonly totalTours = computed(() => this._tours().length);
-
   getTourById(id: number) {
     return computed(() => this._tours().find(tour => tour.id === id) ?? null);
   }
 
-  getLogsForTour(tourId: number) {
-    return computed(() =>
-      this._logs().filter(log => log.tourId === tourId)
-    );
-  }
-
-  addTour(input: {
-    userId: number;
-    name: string;
-    description: string;
-    from: string;
-    to: string;
-    transportType: TransportType;
-    distance: number;
-    estimatedTime: string;
-    mapUrl?: string;
-  }): number | null {
+  addTour(tour: Tour): number | null {
     this._error.set('');
 
-    const name = input.name.trim();
-    const description = input.description.trim();
-    const from = input.from.trim();
-    const to = input.to.trim();
-    const timeRegex = /^\d{1,2}:[0-5]\d$/;
-    const estimatedTime = input.estimatedTime.trim();
-    const mapUrl = (input.mapUrl ?? '').trim();
+    const name = tour.name.trim();
+    const description = tour.description.trim();
+    const from = tour.from.trim();
+    const to = tour.to.trim();
+    const estimatedTime = tour.estimatedTime.trim();
 
     if (name.length < 2) {
       this._error.set('Tour name must be at least 2 characters.');
       return null;
     }
-
     if (description.length < 2) {
       this._error.set('Description must be at least 2 characters.');
       return null;
     }
 
-    if (from.length < 2) {
-      this._error.set('From must be at least 2 characters.');
+    if (tour.distance === null || isNaN(tour.distance) || tour.distance <= 0) {
+      this._error.set('Distance must be a valid number greater than 0.');
       return null;
     }
 
-    if (to.length < 2) {
-      this._error.set('To must be at least 2 characters.');
-      return null;
-    }
+    const nextId = this._tours().length > 0
+      ? Math.max(...this._tours().map(t => t.id)) + 1
+      : 1;
 
-    if (input.distance === null || isNaN(Number(input.distance))) {
-      this._error.set('Distance must be a valid number.');
-      return null;
-    }
-
-    if (input.distance <= 0) {
-      this._error.set('Distance must be greater than 0.');
-      return null;
-    }
-
-    if (estimatedTime.length === 0) {
-      this._error.set('Estimated time is required.');
-      return null;
-    }
-
-    if (!timeRegex.test(estimatedTime)) {
-      this._error.set('Estimated time must be in format HH:MM (e.g., 4:24 or 12:05).');
-      return null;
-    }
-
-    const nextId =
-      this._tours().length > 0
-        ? Math.max(...this._tours().map(tour => tour.id)) + 1
-        : 1;
-
-    const tour: Tour = {
+    const tourToSave: Tour = {
+      ...tour,
       id: nextId,
-      userId: input.userId,
       name,
       description,
       from,
       to,
-      transportType: input.transportType,
-      distance: input.distance,
       estimatedTime,
-      mapUrl: mapUrl || undefined,
+      mapUrl: tour.mapUrl?.trim() || undefined
     };
 
-    this._tours.update(tours => [...tours, tour]);
+    this._tours.update(tours => [...tours, tourToSave]);
     return nextId;
   }
 
@@ -163,56 +113,43 @@ export class TourService {
     );
   }
 
-  addLog(input: {
-    tourId: number;
-    date: string;
-    time: string;
-    comment: string;
-    difficulty: 'easy' | 'medium' | 'hard';
-    totalDistance: number;
-    totalTime: string;
-    rating: number;
-  }): number | null {
+  deleteTour(id: number) {
+    this._tours.update(tours => tours.filter(tour => tour.id !== id));
+    this._logs.update(logs => logs.filter(log => log.tourId !== id));
+  }
+
+  getLogById(id: number) {
+    return computed(() => this._logs().find(l => l.id === id) ?? null);
+  }
+
+  addLog(log: TourLog): number | null {
     this._error.set('');
 
-    const timeRegex = /^\d{1,2}:[0-5]\d$/;
-    if (!timeRegex.test(input.totalTime.trim())) {
-      this._error.set('Duration must be in format H:mm (e.g., 4:30).');
+    if (log.totalDistance === null || isNaN(log.totalDistance) || log.totalDistance <= 0) {
+      this._error.set('Distance must be a valid number.');
       return null;
     }
 
-    if (!input.date) {
-      this._error.set('Date is required.');
-      return null;
-    }
+    const nextId = this._logs().length > 0
+      ? Math.max(...this._logs().map(l => l.id)) + 1
+      : 1;
 
-    if (input.totalDistance === null || isNaN(input.totalDistance) || input.totalDistance <= 0) {
-      this._error.set('Distance must be a valid number greater than 0.');
-      return null;
-    }
-
-    if (input.rating < 1 || input.rating > 5) {
-      this._error.set('Please provide a rating between 1 and 5.');
-      return null;
-    }
-
-    const nextId =
-      this._logs().length > 0
-        ? Math.max(...this._logs().map(log => log.id)) + 1
-        : 1;
-
-    const newLog: TourLog = {
-      ...input,
-      id: nextId
-    };
+    const newLog: TourLog = {...log, id: nextId};
 
     this._logs.update(logs => [...logs, newLog]);
     return nextId;
   }
 
-  deleteTour(id: number) {
-    this._tours.update(tours => tours.filter(tour => tour.id !== id));
-    this._logs.update(logs => logs.filter(log => log.tourId !== id));
+  updateLog(updatedLog: TourLog): void {
+    this._error.set('');
+
+    this._logs.update(logs =>
+      logs.map(log => log.id === updatedLog.id ? {...updatedLog} : log)
+    );
+  }
+
+  deleteLog(logId: number) {
+    this._logs.update(logs => logs.filter(log => log.id !== logId));
   }
 
   clearError() {
