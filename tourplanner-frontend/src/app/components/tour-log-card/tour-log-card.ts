@@ -2,7 +2,8 @@ import {Component, inject, input, Input, output} from '@angular/core';
 import {TourLog} from '../../models/tour-log';
 import {EditDeleteButtons} from "../edit-delete-buttons/edit-delete-buttons";
 import {Router} from '@angular/router';
-import {TourService} from '../../tour-service';
+import {TourService} from '../../service/tour-service';
+
 
 @Component({
   selector: 'app-tour-log-card',

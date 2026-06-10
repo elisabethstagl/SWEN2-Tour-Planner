@@ -3,7 +3,8 @@ import {MatFabButton} from '@angular/material/button';
 import {MatIcon} from '@angular/material/icon';
 import {TourListItem} from '../../components/tour-list-item/tour-list-item';
 import {Layout} from '../../layout/layout';
-import {TourService} from '../../tour-service';
+import {TourService} from '../../service/tour-service';
+import {Map} from '../../components/map/map';
 
 @Component({
   selector: 'app-home',
@@ -14,7 +15,8 @@ import {TourService} from '../../tour-service';
     MatIcon,
     MatFabButton,
     TourListItem,
-    Layout
+    Layout,
+    Map
   ]
 })
 export class HomeComponent {

@@ -5,11 +5,12 @@ import { MatOption, MatSelect } from '@angular/material/select';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { TourService } from '../../tour-service';
+import { TourService } from '../../service/tour-service';
 import { Tour, TransportType } from '../../models/tour';
 import { Router } from '@angular/router';
 import { MatButton } from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
+import {Map} from '../../components/map/map';
 
 @Component({
   selector: 'app-tour-form',
@@ -25,6 +26,7 @@ import { FormsModule } from '@angular/forms';
     MatIconModule,
     MatButton,
     FormsModule,
+    Map,
   ],
   templateUrl: './tour-form.html',
   styleUrl: './tour-form.css',
