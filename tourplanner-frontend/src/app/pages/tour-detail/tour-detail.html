@@ -46,6 +46,7 @@
   }
 
   @if (tour(); as selectedTour) {
-    <img right-content [src]="selectedTour.mapUrl || '/assets/map.png'" alt="Map">
+    <app-map right-content></app-map>
   }
+
 </app-layout>

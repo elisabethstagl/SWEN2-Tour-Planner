@@ -1,6 +1,6 @@
 import {Injectable, computed, signal} from '@angular/core';
-import {Tour, TransportType} from './models/tour';
-import {TourLog} from './models/tour-log';
+import {Tour, TransportType} from '../models/tour';
+import {TourLog} from '../models/tour-log';
 
 @Injectable({
   providedIn: 'root'

@@ -7,7 +7,7 @@ import {MatSelect} from '@angular/material/select';
 import {MatTimepicker, MatTimepickerInput, MatTimepickerToggle} from '@angular/material/timepicker';
 import {MatButton} from '@angular/material/button';
 import {MatIcon} from '@angular/material/icon';
-import {TourService} from '../../tour-service';
+import {TourService} from '../../service/tour-service';
 import {Router} from '@angular/router';
 import {TourLog} from '../../models/tour-log';
 import {FormsModule} from '@angular/forms';

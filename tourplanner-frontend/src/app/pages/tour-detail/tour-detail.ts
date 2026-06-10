@@ -1,11 +1,12 @@
 import {Component, computed, inject, input} from '@angular/core'; // input importieren
 import {Router, RouterLink} from "@angular/router";
-import {TourService} from '../../tour-service';
+import {TourService} from '../../service/tour-service';
 import {Layout} from '../../layout/layout';
 import {TourDetailsCard} from '../../components/tour-details-card/tour-details-card';
 import {TourLogCard} from '../../components/tour-log-card/tour-log-card';
 import {EditDeleteButtons} from '../../components/edit-delete-buttons/edit-delete-buttons';
 import {MatButton} from "@angular/material/button";
+import {Map} from '../../components/map/map';
 
 @Component({
   selector: 'app-tour-detail',
@@ -16,7 +17,8 @@ import {MatButton} from "@angular/material/button";
     Layout,
     TourDetailsCard,
     TourLogCard,
-    EditDeleteButtons
+    EditDeleteButtons,
+    Map
   ],
   templateUrl: './tour-detail.html',
   styleUrl: './tour-detail.css',
