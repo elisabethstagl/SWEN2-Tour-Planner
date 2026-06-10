@@ -43,6 +43,16 @@ export class MapFacadeService {
     L.marker([lat, lng]).addTo(this.map);
   }
 
+  setRoute(points: [number, number][]): void {
+    if (!this.map) return;
+
+    const latLngs = points.map(([lng, lat]) => [lat, lng] as [number, number]);
+
+    const route = L.polyline(latLngs).addTo(this.map);
+
+    this.map.fitBounds(route.getBounds());
+  }
+
   destroyMap(): void {
     this.map?.remove();
     this.map = null;

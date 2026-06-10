@@ -14,7 +14,14 @@ export class Map implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     this.mapFacade.initMap('map');
-    this.mapFacade.setMarker(48.2082, 16.3738);
+
+    this.mapFacade.setMarker(48.2082, 16.3738); // Vienna
+    this.mapFacade.setMarker(47.0707, 15.4395); // Graz
+
+    this.mapFacade.setRoute([
+      [16.3738, 48.2082],
+      [15.4395, 47.0707]
+    ]);
   }
 
   ngOnDestroy(): void {
