@@ -1,3 +1,17 @@
 spring:
   application:
     name: tourplanner-backend
+  datasource:
+    url: jdbc:postgresql://localhost:5432/tourplanner
+    username: tourplanner
+    password: tourplanner
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: validate
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
