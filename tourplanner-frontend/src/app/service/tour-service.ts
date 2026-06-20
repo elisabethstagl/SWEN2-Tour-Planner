@@ -1,65 +1,60 @@
-import {Injectable, computed, signal} from '@angular/core';
-import {Tour, TransportType} from '../models/tour';
-import {TourLog} from '../models/tour-log';
+import { Injectable, computed, inject, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Tour } from '../models/tour';
+import { TourLog } from '../models/tour-log';
+
+type BackendTour = {
+  id: number;
+  user?: { id: number };
+  name: string;
+  description: string;
+  fromLocation: string;
+  toLocation: string;
+  transportType: string;
+  distanceKm: number;
+  estimatedTime: number;
+  mapImagePath?: string;
+};
+
+type BackendTourLog = {
+  id: number;
+  tour?: { id: number };
+  logDatetime: string;
+  comment: string;
+  difficulty: number;
+  totalDistance: number;
+  totalTime: number;
+  rating: number;
+};
 
 @Injectable({
   providedIn: 'root'
 })
 export class TourService {
-  private readonly _tours = signal<Tour[]>([
-    {
-      id: 1,
-      userId: 1,
-      name: 'Inca Trail',
-      description: 'Famous trek through the Andes leading to Machu Picchu with ancient ruins and mountain scenery.',
-      from: 'Cusco, Peru',
-      to: 'Machu Picchu, Peru',
-      transportType: 'walk',
-      distance: 42,
-      estimatedTime: '4 days'
-    },
-    {
-      id: 2,
-      userId: 1,
-      name: 'Tour du Mont Blanc',
-      description: 'Classic alpine circuit passing through France, Italy, and Switzerland with stunning mountain views.',
-      from: 'Chamonix, France',
-      to: 'Chamonix, France',
-      transportType: 'walk',
-      distance: 170,
-      estimatedTime: '10–12 days'
-    }
-  ]);
+  private readonly http = inject(HttpClient);
+  private readonly apiUrl = 'http://localhost:8080/api';
 
-  private readonly _logs = signal<TourLog[]>([
-    {
-      id: 1,
-      tourId: 1,
-      date: '2026-04-01',
-      time: '08:30',
-      comment: 'Amazing weather and great views.',
-      difficulty: 'medium',
-      totalDistance: 41.5,
-      totalTime: '04:45',
-      rating: 5
-    },
-    {
-      id: 2,
-      tourId: 1,
-      date: '2026-04-03',
-      time: '09:00',
-      comment: 'A bit exhausting but beautiful.',
-      difficulty: 'hard',
-      totalDistance: 42,
-      totalTime: '05:10',
-      rating: 4
-    }
-  ]);
-
+  private readonly _tours = signal<Tour[]>([]);
+  private readonly _logs = signal<TourLog[]>([]);
   private readonly _error = signal('');
+
   readonly tours = this._tours.asReadonly();
   readonly logs = this._logs.asReadonly();
   readonly error = this._error.asReadonly();
+
+  loadTours(): void {
+    this.http.get<BackendTour[]>(`${this.apiUrl}/tours`).subscribe({
+      next: tours => this._tours.set(tours.map(t => this.fromBackendTour(t))),
+      error: () => this._error.set('Could not load tours.')
+    });
+  }
+
+  loadLogs(): void {
+    this.http.get<BackendTourLog[]>(`${this.apiUrl}/tourLogs`).subscribe({
+      next: logs => this._logs.set(logs.map(l => this.fromBackendLog(l))),
+      error: () => this._error.set('Could not load tour logs.')
+    });
+  }
 
   getTourById(id: number) {
     return computed(() => this._tours().find(tour => tour.id === id) ?? null);
@@ -68,54 +63,50 @@ export class TourService {
   addTour(tour: Tour): number | null {
     this._error.set('');
 
-    const name = tour.name.trim();
-    const description = tour.description.trim();
-    const from = tour.from.trim();
-    const to = tour.to.trim();
-    const estimatedTime = tour.estimatedTime.trim();
+    const validatedTour = this.validateTour(tour);
+    if (!validatedTour) return null;
 
-    if (name.length < 2) {
-      this._error.set('Tour name must be at least 2 characters.');
-      return null;
-    }
-    if (description.length < 2) {
-      this._error.set('Description must be at least 2 characters.');
-      return null;
-    }
+    this.http.post<BackendTour>(`${this.apiUrl}/tours`, this.toBackendTour(validatedTour)).subscribe({
+      next: savedTour => {
+        this._tours.update(tours => [...tours, this.fromBackendTour(savedTour)]);
+      },
+      error: () => this._error.set('Could not save tour.')
+    });
 
-    if (tour.distance === null || isNaN(tour.distance) || tour.distance <= 0) {
-      this._error.set('Distance must be a valid number greater than 0.');
-      return null;
-    }
-
-    const nextId = this._tours().length > 0
-      ? Math.max(...this._tours().map(t => t.id)) + 1
-      : 1;
-
-    const tourToSave: Tour = {
-      ...tour,
-      id: nextId,
-      name,
-      description,
-      from,
-      to,
-      estimatedTime,
-      mapUrl: tour.mapUrl?.trim() || undefined
-    };
-
-    this._tours.update(tours => [...tours, tourToSave]);
-    return nextId;
+    return null;
   }
 
-  updateTour(updatedTour: Tour) {
-    this._tours.update(tours =>
-      tours.map(tour => tour.id === updatedTour.id ? updatedTour : tour)
-    );
+  updateTour(updatedTour: Tour): void {
+    this._error.set('');
+
+    const validatedTour = this.validateTour(updatedTour);
+    if (!validatedTour) return;
+
+    this.http.put<BackendTour>(
+      `${this.apiUrl}/tours/${updatedTour.id}`,
+      this.toBackendTour(validatedTour)
+    ).subscribe({
+      next: savedTour => {
+        const frontendTour = this.fromBackendTour(savedTour);
+
+        this._tours.update(tours =>
+          tours.map(tour => tour.id === frontendTour.id ? frontendTour : tour)
+        );
+      },
+      error: () => this._error.set('Could not update tour.')
+    });
   }
 
-  deleteTour(id: number) {
-    this._tours.update(tours => tours.filter(tour => tour.id !== id));
-    this._logs.update(logs => logs.filter(log => log.tourId !== id));
+  deleteTour(id: number): void {
+    this._error.set('');
+
+    this.http.delete<void>(`${this.apiUrl}/tours/${id}`).subscribe({
+      next: () => {
+        this._tours.update(tours => tours.filter(tour => tour.id !== id));
+        this._logs.update(logs => logs.filter(log => log.tourId !== id));
+      },
+      error: () => this._error.set('Could not delete tour.')
+    });
   }
 
   getLogById(id: number) {
@@ -130,29 +121,205 @@ export class TourService {
       return null;
     }
 
-    const nextId = this._logs().length > 0
-      ? Math.max(...this._logs().map(l => l.id)) + 1
-      : 1;
+    this.http.post<BackendTourLog>(`${this.apiUrl}/tourLogs`, this.toBackendLog(log)).subscribe({
+      next: savedLog => {
+        this._logs.update(logs => [...logs, this.fromBackendLog(savedLog)]);
+      },
+      error: () => this._error.set('Could not save tour log.')
+    });
 
-    const newLog: TourLog = {...log, id: nextId};
-
-    this._logs.update(logs => [...logs, newLog]);
-    return nextId;
+    return null;
   }
 
   updateLog(updatedLog: TourLog): void {
     this._error.set('');
 
-    this._logs.update(logs =>
-      logs.map(log => log.id === updatedLog.id ? {...updatedLog} : log)
-    );
+    this.http.put<BackendTourLog>(
+      `${this.apiUrl}/tourLogs/${updatedLog.id}`,
+      this.toBackendLog(updatedLog)
+    ).subscribe({
+      next: savedLog => {
+        const frontendLog = this.fromBackendLog(savedLog);
+
+        this._logs.update(logs =>
+          logs.map(log => log.id === frontendLog.id ? frontendLog : log)
+        );
+      },
+      error: () => this._error.set('Could not update tour log.')
+    });
   }
 
-  deleteLog(logId: number) {
-    this._logs.update(logs => logs.filter(log => log.id !== logId));
-  }
-
-  clearError() {
+  deleteLog(logId: number): void {
     this._error.set('');
+
+    this.http.delete<void>(`${this.apiUrl}/tourLogs/${logId}`).subscribe({
+      next: () => this._logs.update(logs => logs.filter(log => log.id !== logId)),
+      error: () => this._error.set('Could not delete tour log.')
+    });
+  }
+
+  clearError(): void {
+    this._error.set('');
+  }
+
+  private validateTour(tour: Tour): Tour | null {
+    const name = tour.name.trim();
+    const description = tour.description.trim();
+    const from = tour.from.trim();
+    const to = tour.to.trim();
+    const estimatedTime = tour.estimatedTime.trim();
+
+    if (name.length < 2) {
+      this._error.set('Tour name must be at least 2 characters.');
+      return null;
+    }
+
+    if (description.length < 2) {
+      this._error.set('Description must be at least 2 characters.');
+      return null;
+    }
+
+    if (tour.distance === null || isNaN(tour.distance) || tour.distance <= 0) {
+      this._error.set('Distance must be a valid number greater than 0.');
+      return null;
+    }
+
+    return {
+      ...tour,
+      name,
+      description,
+      from,
+      to,
+      estimatedTime,
+      mapUrl: tour.mapUrl?.trim() || undefined
+    };
+  }
+
+  private toBackendTour(tour: Tour): BackendTour {
+    return {
+      id: tour.id,
+      user: { id: tour.userId },
+      name: tour.name,
+      description: tour.description,
+      fromLocation: tour.from,
+      toLocation: tour.to,
+      transportType: tour.transportType,
+      distanceKm: tour.distance,
+      estimatedTime: this.parseEstimatedTimeToMinutes(tour.estimatedTime),
+      mapImagePath: tour.mapUrl
+    };
+  }
+
+  private fromBackendTour(tour: BackendTour): Tour {
+    return {
+      id: tour.id,
+      userId: tour.user?.id ?? 1,
+      name: tour.name,
+      description: tour.description,
+      from: tour.fromLocation,
+      to: tour.toLocation,
+      transportType: tour.transportType as Tour['transportType'],
+      distance: tour.distanceKm,
+      estimatedTime: this.formatMinutes(tour.estimatedTime),
+      mapUrl: tour.mapImagePath
+    };
+  }
+
+  private toBackendLog(log: TourLog): BackendTourLog {
+    return {
+      id: log.id,
+      tour: { id: log.tourId },
+      logDatetime: `${log.date}T${log.time}:00Z`,
+      comment: log.comment,
+      difficulty: this.difficultyToNumber(log.difficulty),
+      totalDistance: log.totalDistance,
+      totalTime: this.parseTotalTimeToMinutes(log.totalTime),
+      rating: log.rating
+    };
+  }
+
+  private fromBackendLog(log: BackendTourLog): TourLog {
+    const date = new Date(log.logDatetime);
+
+    return {
+      id: log.id,
+      tourId: log.tour?.id ?? 0,
+      date: date.toISOString().slice(0, 10),
+      time: date.toISOString().slice(11, 16),
+      comment: log.comment,
+      difficulty: this.numberToDifficulty(log.difficulty),
+      totalDistance: log.totalDistance,
+      totalTime: this.formatHoursMinutes(log.totalTime),
+      rating: log.rating
+    };
+  }
+
+  private parseEstimatedTimeToMinutes(value: string): number {
+    const lower = value.toLowerCase();
+
+    if (lower.includes('day')) {
+      const days = parseFloat(lower);
+      return isNaN(days) ? 0 : days * 24 * 60;
+    }
+
+    if (lower.includes(':')) {
+      return this.parseTotalTimeToMinutes(value);
+    }
+
+    const hours = parseFloat(lower);
+    return isNaN(hours) ? 0 : hours * 60;
+  }
+
+  private parseTotalTimeToMinutes(value: string): number {
+    const [hours, minutes] = value.split(':').map(Number);
+    return (hours || 0) * 60 + (minutes || 0);
+  }
+
+  private formatMinutes(minutes: number): string {
+    if (!minutes) return '';
+
+    if (minutes >= 1440 && minutes % 1440 === 0) {
+      return `${minutes / 1440} days`;
+    }
+
+    const hours = Math.floor(minutes / 60);
+    const restMinutes = minutes % 60;
+
+    if (restMinutes === 0) {
+      return `${hours} hours`;
+    }
+
+    return `${hours}:${restMinutes.toString().padStart(2, '0')}`;
+  }
+
+  private formatHoursMinutes(minutes: number): string {
+    const hours = Math.floor(minutes / 60);
+    const restMinutes = minutes % 60;
+
+    return `${hours.toString().padStart(2, '0')}:${restMinutes.toString().padStart(2, '0')}`;
+  }
+
+  private difficultyToNumber(difficulty: TourLog['difficulty']): number {
+    switch (difficulty) {
+      case 'easy':
+        return 1;
+      case 'medium':
+        return 2;
+      case 'hard':
+        return 3;
+    }
+  }
+
+  private numberToDifficulty(difficulty: number): TourLog['difficulty'] {
+    switch (difficulty) {
+      case 1:
+        return 'easy';
+      case 2:
+        return 'medium';
+      case 3:
+        return 'hard';
+      default:
+        return 'medium';
+    }
   }
 }

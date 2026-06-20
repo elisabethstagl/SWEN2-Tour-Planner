@@ -23,4 +23,9 @@ export class HomeComponent {
   private readonly tourService = inject(TourService)
 
   readonly tours = this.tourService.tours;
+
+  constructor() {
+    this.tourService.loadTours();
+    this.tourService.loadLogs();
+  }
 }
