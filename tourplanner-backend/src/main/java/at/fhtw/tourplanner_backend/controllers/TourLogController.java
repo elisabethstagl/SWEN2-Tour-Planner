@@ -3,6 +3,7 @@ package at.fhtw.tourplanner_backend.controllers;
 import at.fhtw.tourplanner_backend.dto.tourlog.TourLogRequestDto;
 import at.fhtw.tourplanner_backend.dto.tourlog.TourLogResponseDto;
 import at.fhtw.tourplanner_backend.services.TourLogService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,12 +33,13 @@ public class TourLogController {
     }
 
     @PostMapping
-    public ResponseEntity<TourLogResponseDto> createTourLog(@RequestBody TourLogRequestDto tourLog) {
+    public ResponseEntity<TourLogResponseDto> createTourLog(@Valid @RequestBody TourLogRequestDto tourLog) {
         return ResponseEntity.ok(tourLogService.createTourLog(tourLog));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<TourLogResponseDto> updateTourLog(
+            @Valid
             @PathVariable Long id,
             @RequestBody TourLogRequestDto tourLog) {
 

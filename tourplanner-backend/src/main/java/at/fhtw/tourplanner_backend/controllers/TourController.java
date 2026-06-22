@@ -3,6 +3,7 @@ package at.fhtw.tourplanner_backend.controllers;
 import at.fhtw.tourplanner_backend.dto.tour.TourRequestDto;
 import at.fhtw.tourplanner_backend.dto.tour.TourResponseDto;
 import at.fhtw.tourplanner_backend.services.TourService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,12 +28,13 @@ public class TourController {
     }
 
     @PostMapping
-    public ResponseEntity<TourResponseDto> createTour(@RequestBody TourRequestDto tour) {
+    public ResponseEntity<TourResponseDto> createTour(@Valid @RequestBody TourRequestDto tour) {
         return ResponseEntity.ok(tourService.createTour(tour));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<TourResponseDto> updateTour(
+            @Valid
             @PathVariable Long id,
             @RequestBody TourRequestDto tour) {
 
