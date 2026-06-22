@@ -1,10 +1,16 @@
 package at.fhtw.tourplanner_backend.services;
 
+import at.fhtw.tourplanner_backend.dto.tour.TourRequestDto;
+import at.fhtw.tourplanner_backend.dto.tour.TourResponseDto;
 import at.fhtw.tourplanner_backend.entities.Tour;
+import at.fhtw.tourplanner_backend.entities.User;
+import at.fhtw.tourplanner_backend.mapper.TourMapper;
 import at.fhtw.tourplanner_backend.repositories.TourRepository;
+import at.fhtw.tourplanner_backend.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -12,34 +18,57 @@ import java.util.List;
 public class TourService {
 
     private final TourRepository tourRepository;
+    private final UserRepository userRepository;
 
-    public List<Tour> getAllTours() {
-        return tourRepository.findAll();
+    public List<TourResponseDto> getAllTours() {
+
+        List<Tour> tours = tourRepository.findAll();
+        List<TourResponseDto> result = new ArrayList<>();
+
+        for (Tour tour : tours) {
+            result.add(TourMapper.toResponseDto(tour));
+        }
+
+        return result;
     }
 
-    public Tour getTourById(Long id) {
-        return tourRepository.findById(id)
+    public TourResponseDto getTourById(Long id) {
+
+        Tour tour = tourRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Tour not found with id: " + id));
+
+        return TourMapper.toResponseDto(tour);
     }
 
-    public Tour createTour(Tour tour) {
-        return tourRepository.save(tour);
+    public TourResponseDto createTour(TourRequestDto dto) {
+
+        User user = userRepository.findById(dto.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + dto.getUserId()));
+
+        Tour tour = TourMapper.toEntity(dto, user);
+        Tour savedTour = tourRepository.save(tour);
+        return TourMapper.toResponseDto(savedTour);
     }
 
-    public Tour updateTour(Long id, Tour updatedTour) {
-        Tour existing = getTourById(id);
-        existing.setName(updatedTour.getName());
-        existing.setDescription(updatedTour.getDescription());
-        existing.setFromLocation(updatedTour.getFromLocation());
-        existing.setToLocation(updatedTour.getToLocation());
-        existing.setTransportType(updatedTour.getTransportType());
-        existing.setDistanceKm(updatedTour.getDistanceKm());
-        existing.setEstimatedTime(updatedTour.getEstimatedTime());
-        existing.setMapImagePath(updatedTour.getMapImagePath());
-        return tourRepository.save(existing);
+    public TourResponseDto updateTour(Long id, TourRequestDto dto) {
+
+        Tour existingTour = tourRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Tour not found with id: " + id));
+
+        User user = userRepository.findById(dto.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + dto.getUserId()));
+
+        TourMapper.updateEntity(existingTour, dto, user);
+        Tour savedTour = tourRepository.save(existingTour);
+        return TourMapper.toResponseDto(savedTour);
     }
 
     public void deleteTour(Long id) {
+
+        if (!tourRepository.existsById(id)) {
+            throw new RuntimeException("Tour not found with id: " + id);
+        }
+
         tourRepository.deleteById(id);
     }
 }

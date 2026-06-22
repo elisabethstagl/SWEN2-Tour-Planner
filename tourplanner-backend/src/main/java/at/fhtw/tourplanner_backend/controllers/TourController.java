@@ -1,6 +1,7 @@
 package at.fhtw.tourplanner_backend.controllers;
 
-import at.fhtw.tourplanner_backend.entities.Tour;
+import at.fhtw.tourplanner_backend.dto.tour.TourRequestDto;
+import at.fhtw.tourplanner_backend.dto.tour.TourResponseDto;
 import at.fhtw.tourplanner_backend.services.TourService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,22 +17,25 @@ public class TourController {
     private final TourService tourService;
 
     @GetMapping
-    public ResponseEntity<List<Tour>> getAllTours() {
+    public ResponseEntity<List<TourResponseDto>> getAllTours() {
         return ResponseEntity.ok(tourService.getAllTours());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Tour> getTourById(@PathVariable Long id) {
+    public ResponseEntity<TourResponseDto> getTourById(@PathVariable Long id) {
         return ResponseEntity.ok(tourService.getTourById(id));
     }
 
     @PostMapping
-    public ResponseEntity<Tour> createTour(@RequestBody Tour tour) {
+    public ResponseEntity<TourResponseDto> createTour(@RequestBody TourRequestDto tour) {
         return ResponseEntity.ok(tourService.createTour(tour));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Tour> updateTour(@PathVariable Long id, @RequestBody Tour tour) {
+    public ResponseEntity<TourResponseDto> updateTour(
+            @PathVariable Long id,
+            @RequestBody TourRequestDto tour) {
+
         return ResponseEntity.ok(tourService.updateTour(id, tour));
     }
 
