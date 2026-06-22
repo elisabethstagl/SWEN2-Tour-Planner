@@ -4,6 +4,7 @@ import at.fhtw.tourplanner_backend.dto.tour.TourRequestDto;
 import at.fhtw.tourplanner_backend.dto.tour.TourResponseDto;
 import at.fhtw.tourplanner_backend.entities.Tour;
 import at.fhtw.tourplanner_backend.entities.User;
+import at.fhtw.tourplanner_backend.exceptions.ResourceNotFoundException;
 import at.fhtw.tourplanner_backend.mapper.TourMapper;
 import at.fhtw.tourplanner_backend.repositories.TourRepository;
 import at.fhtw.tourplanner_backend.repositories.UserRepository;
@@ -35,7 +36,7 @@ public class TourService {
     public TourResponseDto getTourById(Long id) {
 
         Tour tour = tourRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Tour not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Tour not found with id: " + id));
 
         return TourMapper.toResponseDto(tour);
     }
@@ -43,7 +44,7 @@ public class TourService {
     public TourResponseDto createTour(TourRequestDto dto) {
 
         User user = userRepository.findById(dto.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + dto.getUserId()));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + dto.getUserId()));
 
         Tour tour = TourMapper.toEntity(dto, user);
         Tour savedTour = tourRepository.save(tour);
@@ -53,10 +54,10 @@ public class TourService {
     public TourResponseDto updateTour(Long id, TourRequestDto dto) {
 
         Tour existingTour = tourRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Tour not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Tour not found with id: " + id));
 
         User user = userRepository.findById(dto.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + dto.getUserId()));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + dto.getUserId()));
 
         TourMapper.updateEntity(existingTour, dto, user);
         Tour savedTour = tourRepository.save(existingTour);
@@ -66,7 +67,7 @@ public class TourService {
     public void deleteTour(Long id) {
 
         if (!tourRepository.existsById(id)) {
-            throw new RuntimeException("Tour not found with id: " + id);
+            throw new ResourceNotFoundException("Tour not found with id: " + id);
         }
 
         tourRepository.deleteById(id);

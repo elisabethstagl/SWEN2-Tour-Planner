@@ -3,6 +3,8 @@ package at.fhtw.tourplanner_backend.services;
 import at.fhtw.tourplanner_backend.dto.user.UserRequestDto;
 import at.fhtw.tourplanner_backend.dto.user.UserResponseDto;
 import at.fhtw.tourplanner_backend.entities.User;
+import at.fhtw.tourplanner_backend.exceptions.DuplicateResourceException;
+import at.fhtw.tourplanner_backend.exceptions.ResourceNotFoundException;
 import at.fhtw.tourplanner_backend.mapper.UserMapper;
 import at.fhtw.tourplanner_backend.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,11 +19,11 @@ public class UserService {
     public UserResponseDto register(UserRequestDto dto) {
 
         if (userRepository.existsByUsername(dto.getUsername())) {
-            throw new RuntimeException("Username already taken: " + dto.getUsername());
+            throw new DuplicateResourceException("Username already taken: " + dto.getUsername());
         }
 
         if (userRepository.existsByEmail(dto.getEmail())) {
-            throw new RuntimeException("Email already in use: " + dto.getEmail());
+            throw new DuplicateResourceException("Email already in use: " + dto.getEmail());
         }
 
         User user = UserMapper.toEntity(dto);
@@ -32,7 +34,7 @@ public class UserService {
     public UserResponseDto getUserById(Long id) {
 
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
 
         return UserMapper.toResponseDto(user);
     }
@@ -40,7 +42,7 @@ public class UserService {
     public UserResponseDto getUserByUsername(String username) {
 
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found: " + username));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + username));
 
         return UserMapper.toResponseDto(user);
     }
