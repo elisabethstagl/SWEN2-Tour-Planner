@@ -44,7 +44,7 @@ export class TourLogForm {
   private router = inject(Router);
 
   readonly error = this.tourService.error;
-  readonly tourId = input.required<number, string>({ transform: Number });
+  readonly tourId = input.required<number, string>({transform: Number});
   readonly logId = input<number, string | undefined>(undefined, {
     transform: (v) => v ? Number(v) : undefined
   });
@@ -70,7 +70,7 @@ export class TourLogForm {
       if (lId) {
         const existingLog = this.tourService.logs().find(l => l.id === lId);
         if (existingLog) {
-          this.logModel.set({ ...existingLog });
+          this.logModel.set({...existingLog});
           this.pickerDate.set(new Date(existingLog.date));
           const [hrs, mins] = existingLog.time.split(':');
           const d = new Date();
@@ -89,7 +89,7 @@ export class TourLogForm {
       finalValue = isNaN(parsed) ? null : parsed;
     }
 
-    this.logModel.update(prev => ({ ...prev, [field]: finalValue }));
+    this.logModel.update(prev => ({...prev, [field]: finalValue}));
     this.clearError();
   }
 
@@ -100,7 +100,7 @@ export class TourLogForm {
 
   updateTime(t: Date | null) {
     this.pickerTime.set(t);
-    this.updateField('time', t?.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) || '');
+    this.updateField('time', t?.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'}) || '');
   }
 
   setRating(v: number) {
@@ -128,16 +128,29 @@ export class TourLogForm {
   );
 
   stars = [1, 2, 3, 4, 5];
-  clearError() { this.tourService.clearError(); }
 
-  saveLog() {
-    if (!this.canSubmit()) return;
+  clearError() {
+    this.tourService.clearError();
+  }
 
-    const model = { ...this.logModel(), tourId: this.tourId() };
-    const successId = this.logId()
-      ? (this.tourService.updateLog(model), model.id)
-      : this.tourService.addLog(model);
+  saveLog(): void {
+    if (!this.canSubmit()) {
+      return;
+    }
 
-    if (successId) this.router.navigate(['/tour-detail', this.tourId()]);
+    const model = {
+      ...this.logModel(),
+      tourId: this.tourId()
+    };
+
+    if (this.logId()) {
+      this.tourService.updateLog(model, () => {
+        this.router.navigate(['/tour-detail', this.tourId()]);
+      });
+    } else {
+      this.tourService.addLog(model, () => {
+        this.router.navigate(['/tour-detail', this.tourId()]);
+      });
+    }
   }
 }

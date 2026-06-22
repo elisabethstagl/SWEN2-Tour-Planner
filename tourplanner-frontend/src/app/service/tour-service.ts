@@ -1,24 +1,24 @@
-import { Injectable, computed, inject, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Tour } from '../models/tour';
-import { TourLog } from '../models/tour-log';
+import {Injectable, computed, inject, signal} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {Tour, TransportType} from '../models/tour';
+import {TourLog} from '../models/tour-log';
 
-type BackendTour = {
+type TourDto = {
   id: number;
-  user?: { id: number };
+  userId: number;
   name: string;
   description: string;
-  fromLocation: string;
-  toLocation: string;
-  transportType: string;
-  distanceKm: number;
+  from: string;
+  to: string;
+  transportType: TransportType;
+  distance: number;
   estimatedTime: number;
-  mapImagePath?: string;
+  mapUrl?: string;
 };
 
-type BackendTourLog = {
+type TourLogDto = {
   id: number;
-  tour?: { id: number };
+  tourId: number;
   logDatetime: string;
   comment: string;
   difficulty: number;
@@ -43,15 +43,21 @@ export class TourService {
   readonly error = this._error.asReadonly();
 
   loadTours(): void {
-    this.http.get<BackendTour[]>(`${this.apiUrl}/tours`).subscribe({
-      next: tours => this._tours.set(tours.map(t => this.fromBackendTour(t))),
+    this.http.get<TourDto[]>(`${this.apiUrl}/tours`).subscribe({
+      next: tours => {
+        const frontendTours = tours.map(tour => this.convertTourDtoToTour(tour));
+        this._tours.set(frontendTours);
+      },
       error: () => this._error.set('Could not load tours.')
     });
   }
 
   loadLogs(): void {
-    this.http.get<BackendTourLog[]>(`${this.apiUrl}/tourLogs`).subscribe({
-      next: logs => this._logs.set(logs.map(l => this.fromBackendLog(l))),
+    this.http.get<TourLogDto[]>(`${this.apiUrl}/tourLogs`).subscribe({
+      next: logs => {
+        const frontendLogs = logs.map(log => this.convertTourLogDtoToTourLog(log));
+        this._logs.set(frontendLogs);
+      },
       error: () => this._error.set('Could not load tour logs.')
     });
   }
@@ -60,38 +66,52 @@ export class TourService {
     return computed(() => this._tours().find(tour => tour.id === id) ?? null);
   }
 
-  addTour(tour: Tour): number | null {
+  addTour(tour: Tour, onSuccess?: () => void): void {
     this._error.set('');
 
     const validatedTour = this.validateTour(tour);
-    if (!validatedTour) return null;
 
-    this.http.post<BackendTour>(`${this.apiUrl}/tours`, this.toBackendTour(validatedTour)).subscribe({
+    if (validatedTour === null) {
+      return;
+    }
+
+    const tourDto = this.convertTourToTourDto(validatedTour);
+
+    this.http.post<TourDto>(`${this.apiUrl}/tours`, tourDto).subscribe({
       next: savedTour => {
-        this._tours.update(tours => [...tours, this.fromBackendTour(savedTour)]);
+        const frontendTour = this.convertTourDtoToTour(savedTour);
+        this._tours.update(tours => [...tours, frontendTour]);
+
+        if (onSuccess) {
+          onSuccess();
+        }
       },
       error: () => this._error.set('Could not save tour.')
     });
-
-    return null;
   }
 
-  updateTour(updatedTour: Tour): void {
+  updateTour(updatedTour: Tour, onSuccess?: () => void): void {
     this._error.set('');
 
     const validatedTour = this.validateTour(updatedTour);
-    if (!validatedTour) return;
 
-    this.http.put<BackendTour>(
-      `${this.apiUrl}/tours/${updatedTour.id}`,
-      this.toBackendTour(validatedTour)
-    ).subscribe({
+    if (validatedTour === null) {
+      return;
+    }
+
+    const tourDto = this.convertTourToTourDto(validatedTour);
+
+    this.http.put<TourDto>(`${this.apiUrl}/tours/${updatedTour.id}`, tourDto).subscribe({
       next: savedTour => {
-        const frontendTour = this.fromBackendTour(savedTour);
+        const frontendTour = this.convertTourDtoToTour(savedTour);
 
         this._tours.update(tours =>
           tours.map(tour => tour.id === frontendTour.id ? frontendTour : tour)
         );
+
+        if (onSuccess) {
+          onSuccess();
+        }
       },
       error: () => this._error.set('Could not update tour.')
     });
@@ -110,40 +130,48 @@ export class TourService {
   }
 
   getLogById(id: number) {
-    return computed(() => this._logs().find(l => l.id === id) ?? null);
+    return computed(() => this._logs().find(log => log.id === id) ?? null);
   }
 
-  addLog(log: TourLog): number | null {
+  addLog(log: TourLog, onSuccess?: () => void): void {
     this._error.set('');
 
     if (log.totalDistance === null || isNaN(log.totalDistance) || log.totalDistance <= 0) {
       this._error.set('Distance must be a valid number.');
-      return null;
+      return;
     }
 
-    this.http.post<BackendTourLog>(`${this.apiUrl}/tourLogs`, this.toBackendLog(log)).subscribe({
+    const logDto = this.convertTourLogToTourLogDto(log);
+
+    this.http.post<TourLogDto>(`${this.apiUrl}/tourLogs`, logDto).subscribe({
       next: savedLog => {
-        this._logs.update(logs => [...logs, this.fromBackendLog(savedLog)]);
+        const frontendLog = this.convertTourLogDtoToTourLog(savedLog);
+        this._logs.update(logs => [...logs, frontendLog]);
+
+        if (onSuccess) {
+          onSuccess();
+        }
       },
       error: () => this._error.set('Could not save tour log.')
     });
-
-    return null;
   }
 
-  updateLog(updatedLog: TourLog): void {
+  updateLog(updatedLog: TourLog, onSuccess?: () => void): void {
     this._error.set('');
 
-    this.http.put<BackendTourLog>(
-      `${this.apiUrl}/tourLogs/${updatedLog.id}`,
-      this.toBackendLog(updatedLog)
-    ).subscribe({
+    const logDto = this.convertTourLogToTourLogDto(updatedLog);
+
+    this.http.put<TourLogDto>(`${this.apiUrl}/tourLogs/${updatedLog.id}`, logDto).subscribe({
       next: savedLog => {
-        const frontendLog = this.fromBackendLog(savedLog);
+        const frontendLog = this.convertTourLogDtoToTourLog(savedLog);
 
         this._logs.update(logs =>
           logs.map(log => log.id === frontendLog.id ? frontendLog : log)
         );
+
+        if (onSuccess) {
+          onSuccess();
+        }
       },
       error: () => this._error.set('Could not update tour log.')
     });
@@ -153,7 +181,9 @@ export class TourService {
     this._error.set('');
 
     this.http.delete<void>(`${this.apiUrl}/tourLogs/${logId}`).subscribe({
-      next: () => this._logs.update(logs => logs.filter(log => log.id !== logId)),
+      next: () => {
+        this._logs.update(logs => logs.filter(log => log.id !== logId));
+      },
       error: () => this._error.set('Could not delete tour log.')
     });
   }
@@ -186,140 +216,155 @@ export class TourService {
 
     return {
       ...tour,
-      name,
-      description,
-      from,
-      to,
-      estimatedTime,
+      name: name,
+      description: description,
+      from: from,
+      to: to,
+      estimatedTime: estimatedTime,
       mapUrl: tour.mapUrl?.trim() || undefined
     };
   }
 
-  private toBackendTour(tour: Tour): BackendTour {
+  private convertTourToTourDto(tour: Tour): TourDto {
     return {
       id: tour.id,
-      user: { id: tour.userId },
+      userId: tour.userId,
       name: tour.name,
       description: tour.description,
-      fromLocation: tour.from,
-      toLocation: tour.to,
+      from: tour.from,
+      to: tour.to,
       transportType: tour.transportType,
-      distanceKm: tour.distance,
-      estimatedTime: this.parseEstimatedTimeToMinutes(tour.estimatedTime),
-      mapImagePath: tour.mapUrl
+      distance: tour.distance,
+      estimatedTime: this.convertTimeStringToMinutes(tour.estimatedTime),
+      mapUrl: tour.mapUrl
     };
   }
 
-  private fromBackendTour(tour: BackendTour): Tour {
+  private convertTourDtoToTour(tourDto: TourDto): Tour {
     return {
-      id: tour.id,
-      userId: tour.user?.id ?? 1,
-      name: tour.name,
-      description: tour.description,
-      from: tour.fromLocation,
-      to: tour.toLocation,
-      transportType: tour.transportType as Tour['transportType'],
-      distance: tour.distanceKm,
-      estimatedTime: this.formatMinutes(tour.estimatedTime),
-      mapUrl: tour.mapImagePath
+      id: tourDto.id,
+      userId: tourDto.userId,
+      name: tourDto.name,
+      description: tourDto.description,
+      from: tourDto.from,
+      to: tourDto.to,
+      transportType: tourDto.transportType,
+      distance: tourDto.distance,
+      estimatedTime: this.convertMinutesToTimeString(tourDto.estimatedTime),
+      mapUrl: tourDto.mapUrl
     };
   }
 
-  private toBackendLog(log: TourLog): BackendTourLog {
+  private convertTourLogToTourLogDto(log: TourLog): TourLogDto {
     return {
       id: log.id,
-      tour: { id: log.tourId },
+      tourId: log.tourId,
       logDatetime: `${log.date}T${log.time}:00Z`,
       comment: log.comment,
-      difficulty: this.difficultyToNumber(log.difficulty),
+      difficulty: this.convertDifficultyToNumber(log.difficulty),
       totalDistance: log.totalDistance,
-      totalTime: this.parseTotalTimeToMinutes(log.totalTime),
+      totalTime: this.convertTimeStringToMinutes(log.totalTime),
       rating: log.rating
     };
   }
 
-  private fromBackendLog(log: BackendTourLog): TourLog {
-    const date = new Date(log.logDatetime);
+  private convertTourLogDtoToTourLog(logDto: TourLogDto): TourLog {
+    const date = new Date(logDto.logDatetime);
 
     return {
-      id: log.id,
-      tourId: log.tour?.id ?? 0,
+      id: logDto.id,
+      tourId: logDto.tourId,
       date: date.toISOString().slice(0, 10),
       time: date.toISOString().slice(11, 16),
-      comment: log.comment,
-      difficulty: this.numberToDifficulty(log.difficulty),
-      totalDistance: log.totalDistance,
-      totalTime: this.formatHoursMinutes(log.totalTime),
-      rating: log.rating
+      comment: logDto.comment,
+      difficulty: this.convertNumberToDifficulty(logDto.difficulty),
+      totalDistance: logDto.totalDistance,
+      totalTime: this.convertMinutesToHoursMinutes(logDto.totalTime),
+      rating: logDto.rating
     };
   }
 
-  private parseEstimatedTimeToMinutes(value: string): number {
+  private convertTimeStringToMinutes(value: string): number {
     const lower = value.toLowerCase();
 
     if (lower.includes('day')) {
       const days = parseFloat(lower);
-      return isNaN(days) ? 0 : days * 24 * 60;
+
+      if (isNaN(days)) {
+        return 0;
+      }
+
+      return days * 24 * 60;
     }
 
     if (lower.includes(':')) {
-      return this.parseTotalTimeToMinutes(value);
+      const parts = lower.split(':');
+      const hours = Number(parts[0]);
+      const minutes = Number(parts[1]);
+
+      return hours * 60 + minutes;
     }
 
     const hours = parseFloat(lower);
-    return isNaN(hours) ? 0 : hours * 60;
+
+    if (isNaN(hours)) {
+      return 0;
+    }
+
+    return hours * 60;
   }
 
-  private parseTotalTimeToMinutes(value: string): number {
-    const [hours, minutes] = value.split(':').map(Number);
-    return (hours || 0) * 60 + (minutes || 0);
-  }
-
-  private formatMinutes(minutes: number): string {
-    if (!minutes) return '';
+  private convertMinutesToTimeString(minutes: number): string {
+    if (!minutes) {
+      return '';
+    }
 
     if (minutes >= 1440 && minutes % 1440 === 0) {
       return `${minutes / 1440} days`;
     }
 
     const hours = Math.floor(minutes / 60);
-    const restMinutes = minutes % 60;
+    const remainingMinutes = minutes % 60;
 
-    if (restMinutes === 0) {
+    if (remainingMinutes === 0) {
       return `${hours} hours`;
     }
 
-    return `${hours}:${restMinutes.toString().padStart(2, '0')}`;
+    return `${hours}:${remainingMinutes.toString().padStart(2, '0')}`;
   }
 
-  private formatHoursMinutes(minutes: number): string {
+  private convertMinutesToHoursMinutes(minutes: number): string {
     const hours = Math.floor(minutes / 60);
-    const restMinutes = minutes % 60;
+    const remainingMinutes = minutes % 60;
 
-    return `${hours.toString().padStart(2, '0')}:${restMinutes.toString().padStart(2, '0')}`;
+    return `${hours.toString().padStart(2, '0')}:${remainingMinutes.toString().padStart(2, '0')}`;
   }
 
-  private difficultyToNumber(difficulty: TourLog['difficulty']): number {
-    switch (difficulty) {
-      case 'easy':
-        return 1;
-      case 'medium':
-        return 2;
-      case 'hard':
-        return 3;
+  private convertDifficultyToNumber(difficulty: TourLog['difficulty']): number {
+    if (difficulty === 'easy') {
+      return 1;
     }
+
+    if (difficulty === 'medium') {
+      return 2;
+    }
+
+    return 3;
   }
 
-  private numberToDifficulty(difficulty: number): TourLog['difficulty'] {
-    switch (difficulty) {
-      case 1:
-        return 'easy';
-      case 2:
-        return 'medium';
-      case 3:
-        return 'hard';
-      default:
-        return 'medium';
+  private convertNumberToDifficulty(difficulty: number): TourLog['difficulty'] {
+    if (difficulty === 1) {
+      return 'easy';
     }
+
+    if (difficulty === 2) {
+      return 'medium';
+    }
+
+    if (difficulty === 3) {
+      return 'hard';
+    }
+
+    return 'medium';
   }
 }
