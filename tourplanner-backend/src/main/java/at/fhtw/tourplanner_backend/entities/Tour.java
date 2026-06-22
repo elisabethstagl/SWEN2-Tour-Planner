@@ -55,5 +55,10 @@ public class Tour {
     @Column(name = "created_at")
     private Instant createdAt;
 
+    //field is not stored in the DB, only calculated and returned in JSON responses
+    @Transient
+    private Integer popularity;
 
+    @Transient
+    private Double childFriendliness;
 }

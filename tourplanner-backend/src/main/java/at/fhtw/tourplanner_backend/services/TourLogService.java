@@ -1,11 +1,17 @@
 package at.fhtw.tourplanner_backend.services;
 
+import at.fhtw.tourplanner_backend.dto.tourlog.TourLogRequestDto;
+import at.fhtw.tourplanner_backend.dto.tourlog.TourLogResponseDto;
 import at.fhtw.tourplanner_backend.entities.Tour;
 import at.fhtw.tourplanner_backend.entities.TourLog;
+import at.fhtw.tourplanner_backend.exceptions.ResourceNotFoundException;
+import at.fhtw.tourplanner_backend.mapper.TourLogMapper;
 import at.fhtw.tourplanner_backend.repositories.TourLogRepository;
+import at.fhtw.tourplanner_backend.repositories.TourRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -13,36 +19,70 @@ import java.util.List;
 public class TourLogService {
 
     private final TourLogRepository tourLogRepository;
+    private final TourRepository tourRepository;
 
-    public List<TourLog> getAllTourLogs() {
-        return tourLogRepository.findAll();
+    public List<TourLogResponseDto> getAllTourLogs() {
+
+        List<TourLog> logs = tourLogRepository.findAll();
+        List<TourLogResponseDto> result = new ArrayList<>();
+
+        for (TourLog log : logs) {
+            result.add(TourLogMapper.toResponseDto(log));
+        }
+
+        return result;
     }
 
-    public List<TourLog> getTourLogsByTourId(Long tourId) {
-        return tourLogRepository.findByTourId(tourId);
+    public List<TourLogResponseDto> getTourLogsByTourId(Long tourId) {
+
+        List<TourLog> logs = tourLogRepository.findByTourId(tourId);
+        List<TourLogResponseDto> result = new ArrayList<>();
+
+        for (TourLog log : logs) {
+            result.add(TourLogMapper.toResponseDto(log));
+        }
+        return result;
     }
 
-    public TourLog getTourLogById(Long id) {
-        return tourLogRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Tour log not found with id: " + id));
+    public TourLogResponseDto getTourLogById(Long id) {
+
+        TourLog log = tourLogRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Tour log not found with id: " + id));
+
+        return TourLogMapper.toResponseDto(log);
     }
 
-    public TourLog createTourLog(TourLog tourLog) {
-        return tourLogRepository.save(tourLog);
+    public TourLogResponseDto createTourLog(TourLogRequestDto dto) {
+
+        Tour tour = tourRepository.findById(dto.getTourId())
+                .orElseThrow(() -> new ResourceNotFoundException("Tour not found with id: " + dto.getTourId()));
+
+        TourLog log = TourLogMapper.toEntity(dto, tour);
+
+        TourLog savedLog = tourLogRepository.save(log);
+
+        return TourLogMapper.toResponseDto(savedLog);
     }
 
-    public TourLog updateTourLog(Long id, TourLog updatedTourLog) {
-        TourLog existing = getTourLogById(id);
-        existing.setLogDatetime(updatedTourLog.getLogDatetime());
-        existing.setComment(updatedTourLog.getComment());
-        existing.setDifficulty(updatedTourLog.getDifficulty());
-        existing.setTotalDistance(updatedTourLog.getTotalDistance());
-        existing.setTotalTime(updatedTourLog.getTotalTime());
-        existing.setRating(updatedTourLog.getRating());
-        return tourLogRepository.save(existing);
+    public TourLogResponseDto updateTourLog(Long id, TourLogRequestDto dto) {
+
+        TourLog existingLog = tourLogRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Tour log not found with id: " + id));
+
+        Tour tour = tourRepository.findById(dto.getTourId())
+                .orElseThrow(() -> new ResourceNotFoundException("Tour not found with id: " + dto.getTourId()));
+
+        TourLogMapper.updateEntity(existingLog, dto, tour);
+        TourLog savedLog = tourLogRepository.save(existingLog);
+        return TourLogMapper.toResponseDto(savedLog);
     }
 
     public void deleteTourLog(Long id) {
+
+        if (!tourLogRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Tour log not found with id: " + id);
+        }
+
         tourLogRepository.deleteById(id);
     }
 }

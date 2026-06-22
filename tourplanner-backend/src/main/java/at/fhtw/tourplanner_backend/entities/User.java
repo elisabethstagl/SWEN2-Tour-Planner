@@ -1,5 +1,6 @@
 package at.fhtw.tourplanner_backend.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,6 +31,7 @@ public class User {
     private String email;
 
     @Column(name = "password", nullable = false)
+    @JsonIgnore //excludes this field from JSON responses
     private String password;
 
     @ColumnDefault("now()")

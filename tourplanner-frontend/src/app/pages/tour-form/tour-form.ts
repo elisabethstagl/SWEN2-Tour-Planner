@@ -1,15 +1,15 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal, input, effect } from '@angular/core';
-import { Layout } from "../../layout/layout";
-import { MatFormField, MatInput, MatLabel } from '@angular/material/input';
-import { MatOption, MatSelect } from '@angular/material/select';
-import { provideNativeDateAdapter } from '@angular/material/core';
-import { MatIconModule } from '@angular/material/icon';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { TourService } from '../../service/tour-service';
-import { Tour, TransportType } from '../../models/tour';
-import { Router } from '@angular/router';
-import { MatButton } from '@angular/material/button';
-import { FormsModule } from '@angular/forms';
+import {ChangeDetectionStrategy, Component, computed, inject, signal, input, effect} from '@angular/core';
+import {Layout} from "../../layout/layout";
+import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
+import {MatOption, MatSelect} from '@angular/material/select';
+import {provideNativeDateAdapter} from '@angular/material/core';
+import {MatIconModule} from '@angular/material/icon';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {TourService} from '../../service/tour-service';
+import {Tour, TransportType} from '../../models/tour';
+import {Router} from '@angular/router';
+import {MatButton} from '@angular/material/button';
+import {FormsModule} from '@angular/forms';
 import {Map} from '../../components/map/map';
 
 @Component({
@@ -62,7 +62,7 @@ export class TourForm {
       if (tourId) {
         const existingTour = this.tourService.getTourById(tourId)();
         if (existingTour) {
-          this.tourModel.set({ ...existingTour });
+          this.tourModel.set({...existingTour});
         }
       }
     });
@@ -75,7 +75,7 @@ export class TourForm {
       finalValue = value === '' || value === null ? null : Number(value);
     }
 
-    this.tourModel.update(prev => ({ ...prev, [field]: finalValue }));
+    this.tourModel.update(prev => ({...prev, [field]: finalValue}));
     this.clearError();
   }
 
@@ -136,20 +136,21 @@ export class TourForm {
 
   saveTour(): void {
     this.clearError();
-    if (!this.canSubmit()) return;
 
-    const model = this.tourModel();
-    let resultId: number | null;
-
-    if (this.id()) {
-      this.tourService.updateTour(model);
-      resultId = model.id;
-    } else {
-      resultId = this.tourService.addTour(model);
+    if (!this.canSubmit()) {
+      return;
     }
 
-    if (resultId) {
-      this.router.navigate(['/tour', resultId]);
+    const model = this.tourModel();
+
+    if (this.id()) {
+      this.tourService.updateTour(model, () => {
+        this.router.navigate(['/']);
+      });
+    } else {
+      this.tourService.addTour(model, () => {
+        this.router.navigate(['/']);
+      });
     }
   }
 }
