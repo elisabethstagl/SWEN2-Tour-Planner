@@ -5,6 +5,7 @@ import {Register} from './pages/register/register';
 import {Profile} from './pages/profile/profile';
 import {TourForm} from './pages/tour-form/tour-form';
 import {TourLogForm} from './pages/tour-log-form/tour-log-form';
+import {LoginComponent} from './pages/login/login';
 
 export const routes: Routes = [
   {
@@ -38,6 +39,10 @@ export const routes: Routes = [
   {
     path: 'tour-detail/:id',
     component: TourDetail
+  },
+  {
+    path: 'login',
+    component: LoginComponent
   },
   {
     path: '**',
