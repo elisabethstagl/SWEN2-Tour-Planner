@@ -15,9 +15,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class TourRequestDto {
 
-    @NotNull
-    private Long userId;
-
     @NotBlank
     @Size(min = 2, max = 100)
     private String name;

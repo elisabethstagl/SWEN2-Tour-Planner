@@ -38,8 +38,7 @@ public class TourMapper {
     public static TourResponseDto toResponseDto(Tour tour) {
         return new TourResponseDto(
                 tour.getId(),
-                tour.getUser() != null ? tour.getUser().getId() : null,
-                tour.getName(),
+                tour.getUser().getId(),                tour.getName(),
                 tour.getDescription(),
                 tour.getFromLocation(),
                 tour.getToLocation(),
