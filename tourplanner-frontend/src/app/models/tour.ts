@@ -1,4 +1,5 @@
-export type TransportType = 'walk' | 'bike' | 'car' | 'public transport';
+export type TransportType = 'bike' | 'hike' | 'walk' | 'wheelchair' | 'car';
+
 
 export interface Tour {
   id: number;
@@ -9,6 +10,6 @@ export interface Tour {
   to: string;
   transportType: TransportType;
   distance: number;
-  estimatedTime: string;
+  estimatedTime: number;
   mapUrl?: string;
 }

@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, inject, OnDestroy} from '@angular/core';
+import {AfterViewInit, Component, effect, inject, input, OnDestroy} from '@angular/core';
 import {MapFacadeService} from '../../service/map-facade-service';
 
 @Component({
@@ -12,16 +12,25 @@ export class Map implements AfterViewInit, OnDestroy {
 
   private mapFacade = inject(MapFacadeService);
 
+  readonly routePoints = input<[number, number][] | null>(null);
+
   ngAfterViewInit(): void {
     this.mapFacade.initMap('map');
 
-    this.mapFacade.setMarker(48.2082, 16.3738); // Vienna
-    this.mapFacade.setMarker(47.0707, 15.4395); // Graz
+    const points = this.routePoints();
+    if (points && points.length > 0) {
+      this.mapFacade.setRoute(points);
+    }
+  }
 
-    this.mapFacade.setRoute([
-      [16.3738, 48.2082],
-      [15.4395, 47.0707]
-    ]);
+  constructor() {
+    effect(() => {
+      const points = this.routePoints();
+
+      if (points && points.length > 0) {
+        this.mapFacade.setRoute(points);
+      }
+    });
   }
 
   ngOnDestroy(): void {

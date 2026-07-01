@@ -29,6 +29,7 @@ public class OpenRouteService {
                 "coordinates", List.of(start, end)
         );
 
+
         Map response = openRouteServiceWebClient.post()
                 .uri("/v2/directions/{profile}/geojson", profile)
                 .header("Authorization", apiKey)
@@ -75,8 +76,9 @@ public class OpenRouteService {
         return switch (transportType.toLowerCase()) {
             case "bike" -> "cycling-regular";
             case "hike" -> "foot-hiking";
-            case "running" -> "foot-walking";
-            case "vacation", "car" -> "driving-car";
+            case "walk" -> "foot-walking";
+            case "car" -> "driving-car";
+            case "wheelchair" -> "wheelchair";
             default -> "driving-car";
         };
     }
