@@ -9,6 +9,7 @@ import at.fhtw.tourplanner_backend.mapper.TourMapper;
 import at.fhtw.tourplanner_backend.repositories.TourRepository;
 import at.fhtw.tourplanner_backend.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class TourService {
 
     private final TourRepository tourRepository;
@@ -52,6 +54,8 @@ public class TourService {
 
         Tour savedTour = tourRepository.save(tour);
 
+        log.info("User '{}' created tour '{}'.", username, tour.getName());
+
         return TourMapper.toResponseDto(savedTour);
     }
 
@@ -70,6 +74,8 @@ public class TourService {
 
         Tour savedTour = tourRepository.save(existingTour);
 
+        log.info("User '{}' updated tour {}.", username, id);
+
         return TourMapper.toResponseDto(savedTour);
     }
 
@@ -79,6 +85,8 @@ public class TourService {
         Tour tour = tourRepository.findByIdAndUserUsername(id, username)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Tour not found with id: " + id));
+
+        log.info("User '{}' deleted tour {}.", username, id);
 
         tourRepository.delete(tour);
     }

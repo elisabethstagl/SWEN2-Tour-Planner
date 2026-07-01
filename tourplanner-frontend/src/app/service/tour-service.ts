@@ -197,7 +197,7 @@ export class TourService {
     const description = tour.description.trim();
     const from = tour.from.trim();
     const to = tour.to.trim();
-    const estimatedTime = tour.estimatedTime.trim();
+    const estimatedTime = tour.estimatedTime;
 
     if (name.length < 2) {
       this._error.set('Tour name must be at least 2 characters.');
@@ -235,7 +235,7 @@ export class TourService {
       to: tour.to,
       transportType: tour.transportType,
       distance: tour.distance,
-      estimatedTime: this.convertTimeStringToMinutes(tour.estimatedTime),
+      estimatedTime: tour.estimatedTime,
       mapUrl: tour.mapUrl
     };
   }
@@ -250,7 +250,7 @@ export class TourService {
       to: tourDto.to,
       transportType: tourDto.transportType,
       distance: tourDto.distance,
-      estimatedTime: this.convertMinutesToTimeString(tourDto.estimatedTime),
+      estimatedTime: tourDto.estimatedTime,
       mapUrl: tourDto.mapUrl
     };
   }

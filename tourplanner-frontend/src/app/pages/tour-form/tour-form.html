@@ -73,13 +73,23 @@
     </mat-form-field>
   </div>
 
+  <button
+    left-content
+    matButton="tonal"
+    type="button"
+    (click)="calculateRoute()"
+    [disabled]="fromError() || toError()"
+  >
+    Calculate Route
+  </button>
+
   <div left-content class="field">
     <mat-form-field>
       <mat-label>Distance (in km)</mat-label>
       <input
         matInput
-        [ngModel]="tourModel().distance"
-        (ngModelChange)="updateField('distance', $event)"
+        [ngModel]="formatDistance(tourModel().distance)"
+        readonly
         placeholder="5.70"
       >
     </mat-form-field>
@@ -90,11 +100,11 @@
 
   <div left-content class="field">
     <mat-form-field>
-      <mat-label>Estimated Time</mat-label>
+      <mat-label>Estimated Time (in minutes)</mat-label>
       <input
         matInput
-        [ngModel]="tourModel().estimatedTime"
-        (ngModelChange)="updateField('estimatedTime', $event)"
+        [ngModel]="formatEstimatedTime(tourModel().estimatedTime)"
+        readonly
         placeholder="7 days or 04:45"
       >
     </mat-form-field>

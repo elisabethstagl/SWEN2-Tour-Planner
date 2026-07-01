@@ -19,3 +19,6 @@ spring:
 jwt:
     secret: NITOwPvk0CRpX25yuE7V3EjQ+95AtuYl47ppB9/9jZs=
     expiration: 86400000
+
+openrouteservice:
+  api-key: eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjBiZmFiZjBjYTczZjE2ZmU0ZDgwODY0M2IwZWIxYTRkYWYwOTUwOGM1MGZhOWIyMmRlNzgwMzA5IiwiaCI6Im11cm11cjY0In0=

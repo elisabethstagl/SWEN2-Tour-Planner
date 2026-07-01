@@ -8,11 +8,13 @@ import at.fhtw.tourplanner_backend.exceptions.ResourceNotFoundException;
 import at.fhtw.tourplanner_backend.mapper.UserMapper;
 import at.fhtw.tourplanner_backend.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class UserService {
 
     private final UserRepository userRepository;
@@ -21,16 +23,23 @@ public class UserService {
     public UserResponseDto register(UserRequestDto dto) {
 
         if (userRepository.existsByUsername(dto.getUsername())) {
+            log.warn("Registration failed: username '{}' already exists.", dto.getUsername());
             throw new DuplicateResourceException("Username already taken: " + dto.getUsername());
         }
 
+
         if (userRepository.existsByEmail(dto.getEmail())) {
+            log.warn("Registration failed: email '{}' already exists.", dto.getEmail());
             throw new DuplicateResourceException("Email already in use: " + dto.getEmail());
         }
+
 
         User user = UserMapper.toEntity(dto);
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
         User savedUser = userRepository.save(user);
+
+        log.info("New user '{}' registered.", user.getUsername());
+
         return UserMapper.toResponseDto(savedUser);
     }
 

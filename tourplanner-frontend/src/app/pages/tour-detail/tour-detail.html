@@ -46,7 +46,7 @@
   }
 
   @if (tour(); as selectedTour) {
-    <app-map right-content></app-map>
+    <app-map right-content [routePoints]="routePoints()"></app-map>
   }
 
 </app-layout>

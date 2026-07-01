@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import * as L from 'leaflet';
 
 // delete all default markers and add the same marker icons in assets,
@@ -17,6 +17,9 @@ L.Icon.Default.mergeOptions({
 
 export class MapFacadeService {
   private map: L.Map | null = null;
+  private routeLayer: L.Polyline | null = null;
+  private startMarker: L.Marker | null = null;
+  private endMarker: L.Marker | null = null;
 
   initMap(containerId: string): void {
     if (this.map) return;
@@ -28,7 +31,7 @@ export class MapFacadeService {
 
     L.tileLayer(
       'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-      { attribution: '© OpenStreetMap contributors' }
+      {attribution: '© OpenStreetMap contributors'}
     ).addTo(this.map);
 
     this.map.setView([48.2082, 16.3738], 12);
@@ -44,13 +47,23 @@ export class MapFacadeService {
   }
 
   setRoute(points: [number, number][]): void {
-    if (!this.map) return;
+    if (!this.map || points.length === 0) return;
+
+    this.routeLayer?.remove();
+    this.startMarker?.remove();
+    this.endMarker?.remove();
 
     const latLngs = points.map(([lng, lat]) => [lat, lng] as [number, number]);
 
-    const route = L.polyline(latLngs).addTo(this.map);
+    this.routeLayer = L.polyline(latLngs).addTo(this.map);
 
-    this.map.fitBounds(route.getBounds());
+    const start = latLngs[0];
+    const end = latLngs[latLngs.length - 1];
+
+    this.startMarker = L.marker(start).addTo(this.map);
+    this.endMarker = L.marker(end).addTo(this.map);
+
+    this.map.fitBounds(this.routeLayer.getBounds());
   }
 
   destroyMap(): void {

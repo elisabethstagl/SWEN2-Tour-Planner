@@ -6,6 +6,8 @@ import {provideNativeDateAdapter} from '@angular/material/core';
 import {MatIconModule} from '@angular/material/icon';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {TourService} from '../../service/tour-service';
+import {RouteService} from '../../service/route-service';
+import {MapFacadeService} from '../../service/map-facade-service';
 import {Tour, TransportType} from '../../models/tour';
 import {Router} from '@angular/router';
 import {MatButton} from '@angular/material/button';
@@ -36,13 +38,21 @@ import {Map} from '../../components/map/map';
 export class TourForm {
   private readonly tourService = inject(TourService);
   private readonly router = inject(Router);
+  private readonly routeService = inject(RouteService);
+  private readonly mapFacadeService = inject(MapFacadeService);
 
   readonly id = input<number, string | undefined>(undefined, {
     transform: (v) => (v === undefined ? undefined : Number(v))
   });
 
   readonly error = this.tourService.error;
-  readonly transportTypes: TransportType[] = ['walk', 'bike', 'car', 'public transport'];
+  readonly transportTypes: TransportType[] = [
+    'bike',
+    'hike',
+    'walk',
+    'wheelchair',
+    'car'
+  ];
 
   readonly tourModel = signal<Tour>({
     id: 0,
@@ -53,7 +63,7 @@ export class TourForm {
     to: '',
     transportType: 'walk',
     distance: null as any,
-    estimatedTime: '',
+    estimatedTime: null as any,
   });
 
   constructor() {
@@ -75,7 +85,17 @@ export class TourForm {
       finalValue = value === '' || value === null ? null : Number(value);
     }
 
-    this.tourModel.update(prev => ({...prev, [field]: finalValue}));
+    this.tourModel.update(prev => {
+      const updated = {...prev, [field]: finalValue};
+
+      if (field === 'from' || field === 'to' || field === 'transportType') {
+        updated.distance = null as any;
+        updated.estimatedTime = null as any;
+      }
+
+      return updated;
+    });
+
     this.clearError();
   }
 
@@ -116,8 +136,12 @@ export class TourForm {
   });
 
   readonly estimatedTimeError = computed(() => {
-    const v = this.tourModel().estimatedTime.trim();
-    if (v.length === 0) return 'Estimated time is required.';
+    const v = this.tourModel().estimatedTime;
+
+    if (v === null) return 'Estimated time is required.';
+    if (isNaN(Number(v))) return 'Please enter a valid time.';
+    if (Number(v) <= 0) return 'Estimated time must be greater than 0.';
+
     return null;
   });
 
@@ -152,5 +176,57 @@ export class TourForm {
         this.router.navigate(['/']);
       });
     }
+  }
+
+  calculateRoute(): void {
+    const model = this.tourModel();
+
+    this.routeService.calculateRoute({
+      from: model.from,
+      to: model.to,
+      transportType: model.transportType
+    }).subscribe({
+      next: response => {
+        this.tourModel.update(prev => ({
+          ...prev,
+          distance: Number(response.distanceKm.toFixed(2)),
+          estimatedTime: response.durationMinutes
+        }));
+
+        this.mapFacadeService.setRoute(
+          response.coordinates as [number, number][]
+        );
+      },
+      error: () => {
+        alert('Could not calculate route');
+      }
+    });
+  }
+
+  formatDistance(distance: number | null): string {
+    if (distance === null || distance === undefined) {
+      return '';
+    }
+
+    return `${distance.toFixed(2)} km`;
+  }
+
+  formatEstimatedTime(minutes: number | null): string {
+    if (minutes === null || minutes === undefined) {
+      return '';
+    }
+
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+
+    if (hours === 0) {
+      return `${remainingMinutes} min`;
+    }
+
+    if (remainingMinutes === 0) {
+      return `${hours} h`;
+    }
+
+    return `${hours} h ${remainingMinutes} min`;
   }
 }

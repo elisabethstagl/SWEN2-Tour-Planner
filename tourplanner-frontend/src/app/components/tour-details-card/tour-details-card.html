@@ -15,18 +15,18 @@
   </div>
 
   <div>
-    <strong>Transport:</strong>
+    <strong>Transport Type:</strong>
     <p>{{ tour.transportType }}</p>
   </div>
 
   <div>
     <strong>Distance:</strong>
-    <p>{{ tour.distance }} km</p>
+    <p>{{ formatDistance(tour.distance) }}</p>
   </div>
 
   <div>
     <strong>Estimated Time:</strong>
-    <p>{{ tour.estimatedTime }}</p>
+    <p>{{ formatEstimatedTime(tour.estimatedTime) }}</p>
   </div>
 
   <div>
