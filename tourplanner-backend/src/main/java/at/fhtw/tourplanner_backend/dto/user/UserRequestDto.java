@@ -21,6 +21,6 @@ public class UserRequestDto {
     private String email;
 
     @NotBlank
-    @Email
+    @Size(min = 8, max = 100)
     private String password;
 }

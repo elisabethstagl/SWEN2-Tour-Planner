@@ -8,6 +8,7 @@ import at.fhtw.tourplanner_backend.exceptions.ResourceNotFoundException;
 import at.fhtw.tourplanner_backend.mapper.UserMapper;
 import at.fhtw.tourplanner_backend.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public UserResponseDto register(UserRequestDto dto) {
 
@@ -27,6 +29,7 @@ public class UserService {
         }
 
         User user = UserMapper.toEntity(dto);
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
         User savedUser = userRepository.save(user);
         return UserMapper.toResponseDto(savedUser);
     }
