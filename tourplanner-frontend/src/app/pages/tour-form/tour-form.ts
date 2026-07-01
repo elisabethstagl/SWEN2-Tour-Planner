@@ -189,7 +189,7 @@ export class TourForm {
       next: response => {
         this.tourModel.update(prev => ({
           ...prev,
-          distance: response.distanceKm,
+          distance: Number(response.distanceKm.toFixed(2)),
           estimatedTime: response.durationMinutes
         }));
 
@@ -201,5 +201,32 @@ export class TourForm {
         alert('Could not calculate route');
       }
     });
+  }
+
+  formatDistance(distance: number | null): string {
+    if (distance === null || distance === undefined) {
+      return '';
+    }
+
+    return `${distance.toFixed(2)} km`;
+  }
+
+  formatEstimatedTime(minutes: number | null): string {
+    if (minutes === null || minutes === undefined) {
+      return '';
+    }
+
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+
+    if (hours === 0) {
+      return `${remainingMinutes} min`;
+    }
+
+    if (remainingMinutes === 0) {
+      return `${hours} h`;
+    }
+
+    return `${hours} h ${remainingMinutes} min`;
   }
 }

@@ -88,7 +88,7 @@
       <mat-label>Distance (in km)</mat-label>
       <input
         matInput
-        [ngModel]="tourModel().distance"
+        [ngModel]="formatDistance(tourModel().distance)"
         readonly
         placeholder="5.70"
       >
@@ -103,7 +103,7 @@
       <mat-label>Estimated Time (in minutes)</mat-label>
       <input
         matInput
-        [ngModel]="tourModel().estimatedTime"
+        [ngModel]="formatEstimatedTime(tourModel().estimatedTime)"
         readonly
         placeholder="7 days or 04:45"
       >
