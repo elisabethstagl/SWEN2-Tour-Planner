@@ -145,6 +145,22 @@ If saving the tour fails the system shows a creation error message and the user 
 * **On success:** The new tour is saved and visible to the user.
 * **On failure:** No tour is created
 
+## Backend setup
+
+The backend reads its secrets (DB credentials, JWT secret, OpenRouteService API key) from environment
+variables instead of `application.yaml`.
+
+1. `cd tourplanner-backend`
+2. `cp .env.example .env`
+3. Fill in `.env` with real values:
+    - DB values must match your `docker-compose.yml` / local Postgres instance
+    - `JWT_SECRET`: generate with `openssl rand -base64 32`
+    - `ORS_API_KEY`: get a free key at https://openrouteservice.org/dev/#/signup
+4. `docker compose up -d` (starts Postgres + pgAdmin, also reads `.env`)
+5. `./mvnw spring-boot:run` — the `.env` file is loaded automatically on startup
+
+`.env` is gitignored and must never be committed. `.env.example` is the committed template.
+
 ## UML Class Diagram
 
 ## Sequence Diagram for full-text search
