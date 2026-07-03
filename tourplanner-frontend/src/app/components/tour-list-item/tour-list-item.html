@@ -1,4 +1,11 @@
 <div class="card" (click)="openTour()">
-  <h3>{{ tour.name }}</h3>
+  <div class="title-row">
+    <h3>{{ tour.name }}</h3>
+
+    <button class="transport-chip"  matMiniFab [ngClass]="tour.transportType">
+      <mat-icon iconPositionEnd>{{ getTransportIcon(tour.transportType) }}</mat-icon>
+    </button>
+
+  </div>
   <p>{{ tour.description }}</p>
 </div>
