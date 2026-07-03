@@ -1,0 +1,28 @@
+.calculate-route-button {
+  margin-bottom: 20px;
+}
+
+.route-summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 0 0 1rem;
+}
+
+.summary-item {
+  padding: 14px;
+  border-radius: 12px;
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+}
+
+.summary-label {
+  display: block;
+  font-size: 0.8rem;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.summary-item strong {
+  font-size: 1.1rem;
+}

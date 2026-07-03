@@ -1,50 +1,32 @@
 <mat-toolbar class="header-toolbar">
-  <div class="logo" (click)="goHome()">
-    <img src="/assets/logo.png" alt="Logo"/>
+  <div class="logo" routerLink="/app">
+    <img src="/assets/map.png" alt="Logo" />
+    <h3>RouteMate</h3>
   </div>
 
-  <span class="spacer"></span>
+  <div class="search-wrapper">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Search tours</mat-label>
+      <input
+        matInput
+        type="text"
+        placeholder="Name, location, comment..."
+        (input)="onSearch($any($event.target).value)"
+      />
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+  </div>
 
-  <!-- Desktop and iPad -->
   <nav class="nav desktop-nav">
-    <a
-      class="register-button"
-      matButton="tonal"
-      routerLink="/register"
-      routerLinkActive="active"
-      [routerLinkActiveOptions]="{ exact: true }">
-      Register
+    <a matButton="tonal" routerLink="/my-tours" routerLinkActive="active">
+      My Tours
     </a>
 
-    <a
-      class="login-button"
-      matButton="tonal"
-      routerLink="/login"
-      routerLinkActive="active"
-      [routerLinkActiveOptions]="{ exact: true }">
-      Login
-    </a>
-
-    <a
-      class="profile-button"
-      matButton="tonal"
-      routerLink="/profile"
-      routerLinkActive="active"
-      [routerLinkActiveOptions]="{ exact: true }">
-      Profile
-    </a>
-
-    <a
-      class="add-tour-button"
-      matButton="tonal"
-      routerLink="/new-tour"
-      routerLinkActive="active"
-      [routerLinkActiveOptions]="{ exact: true }">
-      + New Tour
-    </a>
+    <button matButton="tonal" type="button" (click)="logout()">
+      Logout
+    </button>
   </nav>
 
-  <!-- Mobile -->
   <button
     class="mobile-menu-button"
     mat-icon-button
@@ -54,24 +36,12 @@
   </button>
 
   <mat-menu #mobileMenu="matMenu">
-    <button mat-menu-item routerLink="/register">
-      <span>Register</span>
+    <button mat-menu-item routerLink="/my-tours">
+      <span>My Tours</span>
     </button>
 
-    <button mat-menu-item routerLink="/">
-      <span>Login</span>
-    </button>
-
-    <button mat-menu-item routerLink="/register">
-      <span>Profile</span>
-    </button>
-
-    <button mat-menu-item routerLink="/new-tour">
-      <span>+ New Tour</span>
-    </button>
-
-    <button mat-menu-item routerLink="/discover">
-      <span>Discover</span>
+    <button mat-menu-item type="button" (click)="logout()">
+      <span>Logout</span>
     </button>
   </mat-menu>
 </mat-toolbar>

@@ -1,5 +1,5 @@
 import {Injectable, computed, inject, signal} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpParams} from '@angular/common/http';
 import {Tour, TransportType} from '../models/tour';
 import {TourLog} from '../models/tour-log';
 
@@ -373,4 +373,17 @@ export class TourService {
 
     return 'medium';
   }
+
+  searchTours(query: string): void {
+    const params = new HttpParams().set('query', query ?? '');
+
+    this.http.get<TourDto[]>(`${this.apiUrl}/tours/search`, {params}).subscribe({
+      next: tours => {
+        const frontendTours = tours.map(tour => this.convertTourDtoToTour(tour));
+        this._tours.set(frontendTours);
+      },
+      error: () => this._error.set('Could not search tours.')
+    });
+  }
+
 }

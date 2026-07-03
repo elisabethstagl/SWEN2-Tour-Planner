@@ -60,7 +60,7 @@ export class TourDetail {
 
   onDeleteTour(): void {
     this.tourService.deleteTour(this.id());
-    this.router.navigate(['/tours']);
+    this.router.navigate(['/my-tours']);
   }
 
   onEditLog(logId: number): void {

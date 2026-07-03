@@ -1,0 +1,16 @@
+<app-layout>
+  <h2 left-header>My Tours</h2>
+
+  <button left-header class="filter-button" matFab extended>
+    Filter
+    <mat-icon iconPositionEnd>filter_list</mat-icon>
+  </button>
+
+  <div left-content>
+    @for (tour of tours(); track tour.id) {
+      <app-tour-list-item [tour]="tour"></app-tour-list-item>
+    } @empty {
+      <p>No tours available.</p>
+    }
+  </div>
+</app-layout>
