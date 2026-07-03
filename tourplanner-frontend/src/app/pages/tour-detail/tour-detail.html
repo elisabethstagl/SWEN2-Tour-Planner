@@ -1,7 +1,15 @@
 <app-layout>
   @if (tour(); as selectedTour) {
     <ng-container left-header>
-      <h2>{{ selectedTour.name }}</h2>
+      <div class="title-row">
+
+        <h2>{{ selectedTour.name }}</h2>
+
+        <button class="transport-chip" matMiniFab [ngClass]="selectedTour.transportType">
+          <mat-icon iconPositionEnd>{{ getTransportIcon(selectedTour.transportType) }}</mat-icon>
+        </button>
+
+      </div>
     </ng-container>
   }
 
