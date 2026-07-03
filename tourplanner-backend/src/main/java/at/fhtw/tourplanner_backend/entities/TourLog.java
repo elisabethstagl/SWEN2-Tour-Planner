@@ -3,7 +3,6 @@ package at.fhtw.tourplanner_backend.entities;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -14,7 +13,6 @@ import java.time.Instant;
 @Entity
 @Table(name = "tour_logs")
 public class TourLog {
-
     @PrePersist
     protected void onCreate() {
         createdAt = Instant.now();
@@ -48,9 +46,6 @@ public class TourLog {
     @Column(name = "rating")
     private Integer rating;
 
-    @ColumnDefault("now()")
-    @Column(name = "created_at")
+    @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
-
-
 }
