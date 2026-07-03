@@ -6,21 +6,22 @@ import at.fhtw.tourplanner_backend.entities.User;
 
 public class UserMapper {
 
-    public static User toEntity(UserRequestDto dto) {
+    // encodedPassword must already be hashed by the caller
+    public static User toEntity(UserRequestDto dto, String encodedPassword) {
         User user = new User();
 
         user.setUsername(dto.getUsername());
         user.setEmail(dto.getEmail());
-        user.setPassword(dto.getPassword());
+        user.setPassword(encodedPassword);
 
         return user;
     }
 
     public static UserResponseDto toResponseDto(User user) {
         return new UserResponseDto(
-                user.getId(),
-                user.getUsername(),
-                user.getEmail()
+            user.getId(),
+            user.getUsername(),
+            user.getEmail()
         );
     }
 }

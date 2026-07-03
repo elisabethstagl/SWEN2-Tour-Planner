@@ -34,8 +34,8 @@ public class UserService {
         }
 
 
-        User user = UserMapper.toEntity(dto);
-        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        String encodedPassword = passwordEncoder.encode(dto.getPassword());
+        User user = UserMapper.toEntity(dto, encodedPassword);
         User savedUser = userRepository.save(user);
 
         log.info("New user '{}' registered.", user.getUsername());
