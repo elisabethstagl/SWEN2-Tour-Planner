@@ -15,10 +15,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static io.netty.util.AsciiString.containsIgnoreCase;
 
@@ -102,37 +99,40 @@ public class TourService {
     public List<TourResponseDto> searchTours(String query) {
         String username = getCurrentUsername();
 
-        List<Tour> tours = tourRepository.findAllByUserUsername(username)
+        List<TourWithLogs> toursWithLogs = tourRepository.findAllByUserUsername(username)
                 .stream()
-                .map(this::withComputedFields)
+                .map(this::withComputedFieldsAndLogs)
                 .toList();
 
         if (query == null || query.isBlank()) {
-            return tours.stream()
-                    .map(TourMapper::toResponseDto)
+            return toursWithLogs.stream()
+                    .map(t -> TourMapper.toResponseDto(t.tour()))
                     .toList();
         }
 
-        String searchTerm = query.trim();
+        String searchTerm = query.trim().toLowerCase();
 
-        // let the database check the tour's own fields (name, description, from, to, transport type)
-        Set<Long> fieldMatchIds = new HashSet<>(tourRepository.findMatchingTourIds(username, searchTerm));
-
-        String searchTermLower = searchTerm.toLowerCase();
-
-        return tours.stream()
-                .filter(tour -> fieldMatchIds.contains(tour.getId())
-                        || matchesComputedValuesOrLogs(tour, searchTermLower))
-                .map(TourMapper::toResponseDto)
+        return toursWithLogs.stream()
+                .filter(t -> matchesOwnFields(t.tour(), searchTerm)
+                        || matchesComputedValuesOrLogs(t.tour(), t.logs(), searchTerm))
+                .map(t -> TourMapper.toResponseDto(t.tour()))
                 .toList();
     }
 
     // HELPER
 
     private Tour withComputedFields(Tour tour) {
-        tour.setPopularity(tourStatsService.computePopularity(tour.getId()));
-        tour.setChildFriendliness(tourStatsService.computeChildFriendliness(tour.getId()));
-        return tour;
+        return withComputedFieldsAndLogs(tour).tour();
+    }
+
+    // Fetches a tour's logs once and reuses that same list for both
+    // computed values (TourStatsService) and, when called from searchTours(),
+    // for matching log comments.
+    private TourWithLogs withComputedFieldsAndLogs(Tour tour) {
+        List<TourLog> logs = tourLogRepository.findByTourId(tour.getId());
+        tour.setPopularity(tourStatsService.computePopularity(logs));
+        tour.setChildFriendliness(tourStatsService.computeChildFriendliness(logs));
+        return new TourWithLogs(tour, logs);
     }
 
     private String getCurrentUsername() {
@@ -141,15 +141,22 @@ public class TourService {
                 .getName();
     }
 
-    private boolean matchesComputedValuesOrLogs(Tour tour, String searchTerm) {
+    private boolean matchesOwnFields(Tour tour, String searchTerm) {
+        return containsIgnoreCase(tour.getName(), searchTerm)
+                || containsIgnoreCase(tour.getDescription(), searchTerm)
+                || containsIgnoreCase(tour.getFromLocation(), searchTerm)
+                || containsIgnoreCase(tour.getToLocation(), searchTerm)
+                || containsIgnoreCase(tour.getTransportType(), searchTerm);
+    }
+
+    private boolean matchesComputedValuesOrLogs(Tour tour, List<TourLog> logs, String searchTerm) {
         if (tour.getPopularity() != null && String.valueOf(tour.getPopularity()).contains(searchTerm)) {
             return true;
         }
+
         if (tour.getChildFriendliness() != null && String.valueOf(tour.getChildFriendliness()).contains(searchTerm)) {
             return true;
         }
-
-        List<TourLog> logs = tourLogRepository.findByTourId(tour.getId());
 
         for (TourLog log : logs) {
             if (containsIgnoreCase(log.getComment(), searchTerm)) {
@@ -160,4 +167,5 @@ public class TourService {
         return false;
     }
 
+    private record TourWithLogs(Tour tour, List<TourLog> logs) {}
 }
