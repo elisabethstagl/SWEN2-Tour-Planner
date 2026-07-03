@@ -3,6 +3,7 @@ package at.fhtw.tourplanner_backend.services;
 import at.fhtw.tourplanner_backend.dto.auth.LoginRequestDto;
 import at.fhtw.tourplanner_backend.dto.auth.LoginResponseDto;
 import at.fhtw.tourplanner_backend.entities.User;
+import at.fhtw.tourplanner_backend.exceptions.InvalidCredentialsException;
 import at.fhtw.tourplanner_backend.repositories.UserRepository;
 import at.fhtw.tourplanner_backend.security.JwtService;
 import lombok.RequiredArgsConstructor;
@@ -23,12 +24,12 @@ public class AuthService {
         User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> {
                     log.warn("Failed login attempt for unknown username '{}'.", request.getUsername());
-                    return new RuntimeException("Invalid credentials");
+                    return new InvalidCredentialsException("Invalid credentials");
                 });
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             log.warn("Failed login attempt for username '{}'.", request.getUsername());
-            throw new RuntimeException("Invalid credentials");
+            throw new InvalidCredentialsException("Invalid credentials");
         }
 
         String token = jwtService.generateToken(user);

@@ -39,9 +39,8 @@ public class TourLogController {
 
     @PutMapping("/{id}")
     public ResponseEntity<TourLogResponseDto> updateTourLog(
-            @Valid
             @PathVariable Long id,
-            @RequestBody TourLogRequestDto tourLog) {
+            @Valid @RequestBody TourLogRequestDto tourLog) {
 
         return ResponseEntity.ok(tourLogService.updateTourLog(id, tourLog));
     }

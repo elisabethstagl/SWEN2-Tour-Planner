@@ -1,5 +1,7 @@
 package at.fhtw.tourplanner_backend.dto.tourlog;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
@@ -21,6 +23,8 @@ public class TourLogRequestDto {
     private String comment;
 
     @NotNull
+    @Min(1)
+    @Max(5)
     private Integer difficulty;
 
     @NotNull
@@ -32,5 +36,7 @@ public class TourLogRequestDto {
     private Integer totalTime;
 
     @NotNull
+    @Min(1)
+    @Max(5)
     private Integer rating;
 }
