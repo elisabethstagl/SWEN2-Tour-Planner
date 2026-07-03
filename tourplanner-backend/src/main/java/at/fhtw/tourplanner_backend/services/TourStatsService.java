@@ -26,7 +26,14 @@ public class TourStatsService {
     public Double computeChildFriendliness(Long tourId) {
         List<TourLog> logs = tourLogRepository.findByTourId(tourId);
 
-        if (logs.isEmpty()) {
+        // Only logs with all three recorded values can contribute to the average
+        List<TourLog> completeLogs = logs.stream()
+                .filter(log -> log.getDifficulty() != null
+                        && log.getTotalDistance() != null
+                        && log.getTotalTime() != null)
+                .toList();
+
+        if (completeLogs.isEmpty()) {
             return null;
         }
 
@@ -34,15 +41,15 @@ public class TourStatsService {
         double totalDistance = 0;
         double totalTime = 0;
 
-        for (TourLog log : logs) {
+        for (TourLog log : completeLogs) {
             totalDifficulty += log.getDifficulty();
             totalDistance += log.getTotalDistance();
             totalTime += log.getTotalTime();
         }
 
-        double avgDifficulty = totalDifficulty / logs.size();
-        double avgDistance = totalDistance / logs.size();
-        double avgTime = totalTime / logs.size();
+        double avgDifficulty = totalDifficulty / completeLogs.size();
+        double avgDistance = totalDistance / completeLogs.size();
+        double avgTime = totalTime / completeLogs.size();
 
         double score = 100.0;
 
