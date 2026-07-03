@@ -31,6 +31,12 @@
 
   <div>
     <strong>Popularity:</strong>
-    <p>{{ popularity }}</p>
+    <p>{{ tour.popularity ?? 0 }}</p>
   </div>
+
+  <div>
+    <strong>Child-Friendliness:</strong>
+    <p>{{ formatChildFriendliness(tour.childFriendliness) }}</p>
+  </div>
+
 </div>

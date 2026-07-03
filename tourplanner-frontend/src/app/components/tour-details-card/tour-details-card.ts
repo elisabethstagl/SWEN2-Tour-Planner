@@ -11,7 +11,6 @@ import {Tour} from '../../models/tour';
 
 export class TourDetailsCard {
   @Input({required: true}) tour!: Tour;
-  @Input({required: true}) popularity!: number;
 
   formatEstimatedTime(minutes: number): string {
     const hours = Math.floor(minutes / 60);
@@ -30,5 +29,13 @@ export class TourDetailsCard {
 
   formatDistance(distance: number): string {
     return `${distance.toFixed(2)} km`;
+  }
+
+  formatChildFriendliness(score: number | null | undefined): string {
+    if (score === null || score === undefined) {
+      return 'Not yet rated';
+    }
+
+    return `${score} / 100`;
   }
 }

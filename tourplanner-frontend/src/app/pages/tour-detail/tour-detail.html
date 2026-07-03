@@ -14,8 +14,7 @@
   @if (tour(); as selectedTour) {
     <ng-container left-content>
       <app-tour-details-card
-        [tour]="selectedTour"
-        [popularity]="popularity()">
+        [tour]="selectedTour">
       </app-tour-details-card>
 
       <section class="logs-section">

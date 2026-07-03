@@ -14,6 +14,8 @@ type TourDto = {
   distance: number;
   estimatedTime: number;
   mapUrl?: string;
+  popularity?: number;
+  childFriendliness?: number | null;
 };
 
 type TourLogDto = {
@@ -147,6 +149,7 @@ export class TourService {
       next: savedLog => {
         const frontendLog = this.convertTourLogDtoToTourLog(savedLog);
         this._logs.update(logs => [...logs, frontendLog]);
+        this.loadTours();
 
         if (onSuccess) {
           onSuccess();
@@ -166,8 +169,8 @@ export class TourService {
         const frontendLog = this.convertTourLogDtoToTourLog(savedLog);
 
         this._logs.update(logs =>
-          logs.map(log => log.id === frontendLog.id ? frontendLog : log)
-        );
+          logs.map(log => log.id === frontendLog.id ? frontendLog : log));
+        this.loadTours();
 
         if (onSuccess) {
           onSuccess();
@@ -183,6 +186,7 @@ export class TourService {
     this.http.delete<void>(`${this.apiUrl}/tourLogs/${logId}`).subscribe({
       next: () => {
         this._logs.update(logs => logs.filter(log => log.id !== logId));
+        this.loadTours();
       },
       error: () => this._error.set('Could not delete tour log.')
     });
@@ -251,7 +255,9 @@ export class TourService {
       transportType: tourDto.transportType,
       distance: tourDto.distance,
       estimatedTime: tourDto.estimatedTime,
-      mapUrl: tourDto.mapUrl
+      mapUrl: tourDto.mapUrl,
+      popularity: tourDto.popularity,
+      childFriendliness: tourDto.childFriendliness
     };
   }
 

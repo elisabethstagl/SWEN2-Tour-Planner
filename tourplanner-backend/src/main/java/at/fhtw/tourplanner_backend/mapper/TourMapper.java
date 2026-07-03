@@ -38,14 +38,17 @@ public class TourMapper {
     public static TourResponseDto toResponseDto(Tour tour) {
         return new TourResponseDto(
                 tour.getId(),
-                tour.getUser().getId(),                tour.getName(),
+                tour.getUser().getId(),
+                tour.getName(),
                 tour.getDescription(),
                 tour.getFromLocation(),
                 tour.getToLocation(),
                 tour.getTransportType(),
                 tour.getDistanceKm(),
                 tour.getEstimatedTime(),
-                tour.getMapImagePath()
+                tour.getMapImagePath(),
+                tour.getPopularity(),
+                tour.getChildFriendliness()
         );
     }
 }

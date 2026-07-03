@@ -54,8 +54,6 @@ export class TourDetail {
     return this.tourService.logs().filter(log => log.tourId === tourId);
   });
 
-  readonly popularity = computed(() => this.logs().length);
-
   onEditTour(): void {
     this.router.navigate(['/edit-tour', this.id()]);
   }

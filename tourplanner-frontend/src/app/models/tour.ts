@@ -12,4 +12,6 @@ export interface Tour {
   distance: number;
   estimatedTime: number;
   mapUrl?: string;
+  popularity?: number;
+  childFriendliness?: number | null;
 }
