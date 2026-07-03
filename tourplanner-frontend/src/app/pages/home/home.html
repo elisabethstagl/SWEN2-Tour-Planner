@@ -1,6 +1,17 @@
 <app-layout>
     <h2 left-header>Tours</h2>
 
+  <mat-form-field left-header appearance="outline" class="search-field">
+    <mat-label>Search tours</mat-label>
+    <input
+      matInput
+      type="text"
+      placeholder="Name, location, comment..."
+      (input)="onSearch($any($event.target).value)"
+    />
+    <mat-icon matSuffix>search</mat-icon>
+  </mat-form-field>
+
     <button left-header class="filter-button" matFab extended>
       Filter
       <mat-icon iconPositionEnd>filter_list</mat-icon>

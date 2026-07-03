@@ -5,6 +5,8 @@ import {TourListItem} from '../../components/tour-list-item/tour-list-item';
 import {Layout} from '../../layout/layout';
 import {TourService} from '../../service/tour-service';
 import {Map} from '../../components/map/map';
+import {MatFormField, MatLabel, MatSuffix} from '@angular/material/form-field';
+import {MatInput} from '@angular/material/input';
 
 @Component({
   selector: 'app-home',
@@ -14,6 +16,10 @@ import {Map} from '../../components/map/map';
   imports: [
     MatIcon,
     MatFabButton,
+    MatFormField,
+    MatInput,
+    MatLabel,
+    MatSuffix,
     TourListItem,
     Layout,
     Map
@@ -27,5 +33,9 @@ export class HomeComponent {
   constructor() {
     this.tourService.loadTours();
     this.tourService.loadLogs();
+  }
+
+  onSearch(query: string): void {
+    this.tourService.searchTours(query);
   }
 }

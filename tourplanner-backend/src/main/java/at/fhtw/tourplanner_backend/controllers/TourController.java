@@ -27,6 +27,11 @@ public class TourController {
         return ResponseEntity.ok(tourService.getTourById(id));
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<TourResponseDto>> searchTours(@RequestParam(required = false) String query) {
+        return ResponseEntity.ok(tourService.searchTours(query));
+    }
+
     @PostMapping
     public ResponseEntity<TourResponseDto> createTour(@Valid @RequestBody TourRequestDto tour) {
         return ResponseEntity.ok(tourService.createTour(tour));

@@ -3,9 +3,11 @@ package at.fhtw.tourplanner_backend.services;
 import at.fhtw.tourplanner_backend.dto.tour.TourRequestDto;
 import at.fhtw.tourplanner_backend.dto.tour.TourResponseDto;
 import at.fhtw.tourplanner_backend.entities.Tour;
+import at.fhtw.tourplanner_backend.entities.TourLog;
 import at.fhtw.tourplanner_backend.entities.User;
 import at.fhtw.tourplanner_backend.exceptions.ResourceNotFoundException;
 import at.fhtw.tourplanner_backend.mapper.TourMapper;
+import at.fhtw.tourplanner_backend.repositories.TourLogRepository;
 import at.fhtw.tourplanner_backend.repositories.TourRepository;
 import at.fhtw.tourplanner_backend.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +16,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import static io.netty.util.AsciiString.containsIgnoreCase;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +30,7 @@ public class TourService {
     private final TourRepository tourRepository;
     private final UserRepository userRepository;
     private final TourStatsService tourStatsService;
+    private final TourLogRepository tourLogRepository;
 
     public List<TourResponseDto> getAllTours() {
         String username = getCurrentUsername();
@@ -92,6 +99,34 @@ public class TourService {
         tourRepository.delete(tour);
     }
 
+    public List<TourResponseDto> searchTours(String query) {
+        String username = getCurrentUsername();
+
+        List<Tour> tours = tourRepository.findAllByUserUsername(username)
+                .stream()
+                .map(this::withComputedFields)
+                .toList();
+
+        if (query == null || query.isBlank()) {
+            return tours.stream()
+                    .map(TourMapper::toResponseDto)
+                    .toList();
+        }
+
+        String searchTerm = query.trim();
+
+        // let the database check the tour's own fields (name, description, from, to, transport type)
+        Set<Long> fieldMatchIds = new HashSet<>(tourRepository.findMatchingTourIds(username, searchTerm));
+
+        String searchTermLower = searchTerm.toLowerCase();
+
+        return tours.stream()
+                .filter(tour -> fieldMatchIds.contains(tour.getId())
+                        || matchesComputedValuesOrLogs(tour, searchTermLower))
+                .map(TourMapper::toResponseDto)
+                .toList();
+    }
+
     // HELPER
 
     private Tour withComputedFields(Tour tour) {
@@ -105,4 +140,24 @@ public class TourService {
                 .getAuthentication()
                 .getName();
     }
+
+    private boolean matchesComputedValuesOrLogs(Tour tour, String searchTerm) {
+        if (tour.getPopularity() != null && String.valueOf(tour.getPopularity()).contains(searchTerm)) {
+            return true;
+        }
+        if (tour.getChildFriendliness() != null && String.valueOf(tour.getChildFriendliness()).contains(searchTerm)) {
+            return true;
+        }
+
+        List<TourLog> logs = tourLogRepository.findByTourId(tour.getId());
+
+        for (TourLog log : logs) {
+            if (containsIgnoreCase(log.getComment(), searchTerm)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 }
