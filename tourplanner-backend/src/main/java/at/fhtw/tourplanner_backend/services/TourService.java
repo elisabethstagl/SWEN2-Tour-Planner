@@ -23,13 +23,14 @@ public class TourService {
 
     private final TourRepository tourRepository;
     private final UserRepository userRepository;
+    private final TourStatsService tourStatsService;
 
     public List<TourResponseDto> getAllTours() {
         String username = getCurrentUsername();
 
         return tourRepository.findAllByUserUsername(username)
                 .stream()
-                .map(tour -> TourMapper.toResponseDto(tour))
+                .map(tour -> TourMapper.toResponseDto(withComputedFields(tour)))
                 .toList();
     }
 
@@ -40,7 +41,7 @@ public class TourService {
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Tour not found with id: " + id));
 
-        return TourMapper.toResponseDto(tour);
+        return TourMapper.toResponseDto(withComputedFields(tour));
     }
 
     public TourResponseDto createTour(TourRequestDto dto) {
@@ -56,7 +57,7 @@ public class TourService {
 
         log.info("User '{}' created tour '{}'.", username, tour.getName());
 
-        return TourMapper.toResponseDto(savedTour);
+        return TourMapper.toResponseDto(withComputedFields(savedTour));
     }
 
     public TourResponseDto updateTour(Long id, TourRequestDto dto) {
@@ -76,7 +77,7 @@ public class TourService {
 
         log.info("User '{}' updated tour {}.", username, id);
 
-        return TourMapper.toResponseDto(savedTour);
+        return TourMapper.toResponseDto(withComputedFields(savedTour));
     }
 
     public void deleteTour(Long id) {
@@ -92,6 +93,12 @@ public class TourService {
     }
 
     // HELPER
+
+    private Tour withComputedFields(Tour tour) {
+        tour.setPopularity(tourStatsService.computePopularity(tour.getId()));
+        tour.setChildFriendliness(tourStatsService.computeChildFriendliness(tour.getId()));
+        return tour;
+    }
 
     private String getCurrentUsername() {
         return SecurityContextHolder.getContext()

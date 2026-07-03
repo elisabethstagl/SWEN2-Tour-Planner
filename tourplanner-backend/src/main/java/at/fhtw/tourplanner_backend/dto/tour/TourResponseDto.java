@@ -19,4 +19,6 @@ public class TourResponseDto {
     private Double distance;
     private Integer estimatedTime;
     private String mapUrl;
+    private Integer popularity;
+    private Double childFriendliness;
 }
