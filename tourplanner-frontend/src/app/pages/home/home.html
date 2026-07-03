@@ -1,29 +1,35 @@
-<app-layout>
-    <h2 left-header>Tours</h2>
+<div class="landing-page">
+  <div class="landing-card">
 
-  <mat-form-field left-header appearance="outline" class="search-field">
-    <mat-label>Search tours</mat-label>
-    <input
-      matInput
-      type="text"
-      placeholder="Name, location, comment..."
-      (input)="onSearch($any($event.target).value)"
-    />
-    <mat-icon matSuffix>search</mat-icon>
-  </mat-form-field>
+    <img src="assets/map.png"
+         alt="Logo"
+         class="logo" />
 
-    <button left-header class="filter-button" matFab extended>
-      Filter
-      <mat-icon iconPositionEnd>filter_list</mat-icon>
-    </button>
+    <h1>RouteMate</h1>
 
-  <div left-content>
-    @for (tour of tours(); track tour.id) {
-      <app-tour-list-item [tour]="tour"></app-tour-list-item>
-    }@empty {
-      <p>No tours available.</p>
-    }
+    <p class="subtitle">
+      Plan, organize and manage your tours in one place.
+    </p>
+
+    <p class="info-text">
+      Please log in or create an account to start planning your routes.
+    </p>
+
+    <div class="actions">
+      <button
+        mat-raised-button
+        color="primary"
+        routerLink="/login">
+        Login
+      </button>
+
+      <button
+        mat-raised-button
+        color="accent"
+        routerLink="/register">
+        Register
+      </button>
+    </div>
+
   </div>
-
-  <app-map right-content></app-map>
-</app-layout>
+</div>

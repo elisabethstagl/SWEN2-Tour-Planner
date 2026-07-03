@@ -24,9 +24,16 @@
 }
 
 .right-panel {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  display: block;
+  width: 100%;
+  min-height: 400px;
+}
+
+.right-panel app-map {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 400px;
 }
 
 
@@ -39,6 +46,16 @@
   .grid-layout {
     grid-template-columns: 1fr;
     gap: 30px;
+  }
+
+  .right-panel {
+    width: 100%;
+    min-height: 400px;
+    display: block;
+  }
+
+  .right-panel app-map {
+    height: 400px;
   }
 }
 

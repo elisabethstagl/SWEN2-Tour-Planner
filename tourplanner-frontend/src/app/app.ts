@@ -1,5 +1,6 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import {Component, OnDestroy, signal} from '@angular/core';
+import {NavigationEnd, Router, RouterOutlet} from '@angular/router';
+import {filter, Subscription} from 'rxjs';
 import {HeaderComponent} from './components/header/header';
 
 @Component({
@@ -8,6 +9,28 @@ import {HeaderComponent} from './components/header/header';
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
-export class App {
+export class App implements OnDestroy {
   protected readonly title = signal('tourplanner-frontend');
+  protected readonly currentUrl = signal('/');
+  private readonly subscription: Subscription;
+
+  constructor(private router: Router) {
+    this.currentUrl.set(this.router.url.split('?')[0]);
+
+    this.subscription = this.router.events
+      .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
+      .subscribe(event => this.currentUrl.set(event.urlAfterRedirects.split('?')[0]));
+  }
+
+  showHeader(): boolean {
+    return !['/', '/login', '/register'].includes(this.currentUrl());
+  }
+
+  isFullScreenPage(): boolean {
+    return this.currentUrl() === '/app';
+  }
+
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  }
 }

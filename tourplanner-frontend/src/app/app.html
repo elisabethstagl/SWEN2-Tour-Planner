@@ -341,9 +341,10 @@
 
 <!--<router-outlet />-->
 
-<app-header></app-header>
+@if (showHeader()) {
+  <app-header></app-header>
+}
 
-<main class="app-content">
+<main class="app-content" [class.no-padding]="!showHeader() || isFullScreenPage()">
   <router-outlet></router-outlet>
 </main>
-

@@ -12,6 +12,8 @@ import {Tour, TransportType} from '../../models/tour';
 import {Router} from '@angular/router';
 import {MatButton} from '@angular/material/button';
 import {FormsModule} from '@angular/forms';
+import {NgTemplateOutlet} from '@angular/common';
+import {MatSnackBar} from '@angular/material/snack-bar';
 import {Map} from '../../components/map/map';
 
 @Component({
@@ -28,7 +30,8 @@ import {Map} from '../../components/map/map';
     MatIconModule,
     MatButton,
     FormsModule,
-    Map,
+    NgTemplateOutlet,
+    Map
   ],
   templateUrl: './tour-form.html',
   styleUrl: './tour-form.css',
@@ -40,6 +43,9 @@ export class TourForm {
   private readonly router = inject(Router);
   private readonly routeService = inject(RouteService);
   private readonly mapFacadeService = inject(MapFacadeService);
+  private readonly snackBar = inject(MatSnackBar);
+
+  readonly embedded = input(false);
 
   readonly id = input<number, string | undefined>(undefined, {
     transform: (v) => (v === undefined ? undefined : Number(v))
@@ -167,13 +173,30 @@ export class TourForm {
 
     const model = this.tourModel();
 
+    const showSuccessAndNavigate = (message: string) => {
+      const snackBarRef = this.snackBar.open(
+        message,
+        '',
+        {
+          duration: 1500,
+          horizontalPosition: 'center',
+          verticalPosition: 'top',
+          panelClass: ['success-snackbar']
+        }
+      );
+
+      snackBarRef.afterDismissed().subscribe(() => {
+        this.router.navigate(['/my-tours']);
+      });
+    };
+
     if (this.id()) {
       this.tourService.updateTour(model, () => {
-        this.router.navigate(['/']);
+        showSuccessAndNavigate('Tour updated successfully!');
       });
     } else {
       this.tourService.addTour(model, () => {
-        this.router.navigate(['/']);
+        showSuccessAndNavigate('Tour saved successfully!');
       });
     }
   }
