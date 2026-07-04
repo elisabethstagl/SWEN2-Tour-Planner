@@ -70,6 +70,7 @@ export class TourForm {
     transportType: 'walk',
     distance: null as any,
     estimatedTime: null as any,
+    routeGeometry: null,
   });
 
   constructor() {
@@ -97,6 +98,7 @@ export class TourForm {
       if (field === 'from' || field === 'to' || field === 'transportType') {
         updated.distance = null as any;
         updated.estimatedTime = null as any;
+        updated.routeGeometry = null;
       }
 
       return updated;
@@ -210,15 +212,16 @@ export class TourForm {
       transportType: model.transportType
     }).subscribe({
       next: response => {
+        const coordinates = response.coordinates as [number, number][];
+
         this.tourModel.update(prev => ({
           ...prev,
           distance: Number(response.distanceKm.toFixed(2)),
-          estimatedTime: response.durationMinutes
+          estimatedTime: response.durationMinutes,
+          routeGeometry: coordinates
         }));
 
-        this.mapFacadeService.setRoute(
-          response.coordinates as [number, number][]
-        );
+        this.mapFacadeService.setRoute(coordinates);
       },
       error: () => {
         alert('Could not calculate route');

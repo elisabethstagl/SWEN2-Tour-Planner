@@ -40,5 +40,5 @@ public class TourRequestDto {
     @Positive
     private Integer estimatedTime;
 
-    private String mapUrl;
+    private String routeGeometry;
 }
