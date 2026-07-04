@@ -1,5 +1,6 @@
 package at.fhtw.tourplanner_backend.services;
 
+import at.fhtw.tourplanner_backend.dto.route.GeocodeSuggestionDto;
 import at.fhtw.tourplanner_backend.dto.route.RouteRequestDto;
 import at.fhtw.tourplanner_backend.dto.route.RouteResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -89,6 +90,45 @@ public class OpenRouteService {
         log.debug("Address '{}' resolved to coordinates {}", address, coordinates);
 
         return coordinates;
+    }
+
+
+    public List<GeocodeSuggestionDto> autocomplete(String text) {
+
+        log.debug("Fetching autocomplete suggestions for '{}'", text);
+
+        Map response = openRouteServiceWebClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/geocode/autocomplete")
+                        .queryParam("text", text)
+                        .queryParam("size", 5)
+                        .build()
+                )
+                .header("Authorization", apiKey)
+                .retrieve()
+                .bodyToMono(Map.class)
+                .block();
+
+        List<?> features = (List<?>) response.get("features");
+
+        if (features == null) {
+            return List.of();
+        }
+
+        return features.stream()
+                .map(f -> (Map) f)
+                .map(feature -> {
+                    Map properties = (Map) feature.get("properties");
+                    Map geometry = (Map) feature.get("geometry");
+                    List<Double> coordinates = (List<Double>) geometry.get("coordinates");
+
+                    String label = (String) properties.get("label");
+                    Double longitude = coordinates.get(0);
+                    Double latitude = coordinates.get(1);
+
+                    return new GeocodeSuggestionDto(label, latitude, longitude);
+                })
+                .toList();
     }
 
     private String mapTransportType(String transportType) {
