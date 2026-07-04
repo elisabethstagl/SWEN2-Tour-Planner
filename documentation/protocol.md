@@ -218,6 +218,7 @@ http://localhost:8080
 
 ## UML Class Diagram
 
+![tourplanner_backend_class_diagram.png](tourplanner_backend_class_diagram.png)
 
 ## Sequence Diagram for full-text search
 
