@@ -79,6 +79,11 @@ export class TourDetail {
   routePoints = signal<[number, number][] | null>(null);
 
   loadRouteForTour(tour: Tour): void {
+    if (tour.routeGeometry && tour.routeGeometry.length > 0) {
+      this.routePoints.set(tour.routeGeometry);
+      return;
+    }
+
     this.routeService.calculateRoute({
       from: tour.from,
       to: tour.to,

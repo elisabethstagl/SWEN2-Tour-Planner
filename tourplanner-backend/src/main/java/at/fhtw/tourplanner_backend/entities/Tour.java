@@ -48,8 +48,8 @@ public class Tour {
     @Column(name = "estimated_time")
     private Integer estimatedTime;
 
-    @Column(name = "map_image_path", length = 500)
-    private String mapImagePath;
+    @Column(name = "route_geometry", columnDefinition = "TEXT")
+    private String routeGeometry;
 
     @ColumnDefault("now()")
     @Column(name = "created_at")
