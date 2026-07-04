@@ -48,14 +48,8 @@
         matInput
         [ngModel]="tourModel().from"
         (ngModelChange)="updateField('from', $event)"
-        [matAutocomplete]="fromAuto"
       >
     </mat-form-field>
-    <mat-autocomplete #fromAuto="matAutocomplete" (optionSelected)="onFromSuggestionSelected($event)">
-      @for (suggestion of fromSuggestions(); track suggestion.label) {
-        <mat-option [value]="suggestion.label">{{ suggestion.label }}</mat-option>
-      }
-    </mat-autocomplete>
     @if (fromError()) {
       <div class="field-error">{{ fromError() }}</div>
     }
@@ -68,14 +62,8 @@
         matInput
         [ngModel]="tourModel().to"
         (ngModelChange)="updateField('to', $event)"
-        [matAutocomplete]="toAuto"
       >
     </mat-form-field>
-    <mat-autocomplete #toAuto="matAutocomplete" (optionSelected)="onToSuggestionSelected($event)">
-      @for (suggestion of toSuggestions(); track suggestion.label) {
-        <mat-option [value]="suggestion.label">{{ suggestion.label }}</mat-option>
-      }
-    </mat-autocomplete>
     @if (toError()) {
       <div class="field-error">{{ toError() }}</div>
     }

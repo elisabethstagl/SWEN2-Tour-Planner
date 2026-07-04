@@ -1,15 +1,15 @@
 package at.fhtw.tourplanner_backend.controllers;
 
-import at.fhtw.tourplanner_backend.dto.route.GeocodeSuggestionDto;
 import at.fhtw.tourplanner_backend.dto.route.RouteRequestDto;
 import at.fhtw.tourplanner_backend.dto.route.RouteResponseDto;
 import at.fhtw.tourplanner_backend.services.OpenRouteService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/routes")
@@ -23,16 +23,5 @@ public class RouteController {
             @Valid @RequestBody RouteRequestDto request
     ) {
         return ResponseEntity.ok(openRouteService.calculateRoute(request));
-    }
-
-    @GetMapping("/autocomplete")
-    public ResponseEntity<List<GeocodeSuggestionDto>> autocomplete(
-            @RequestParam String query
-    ) {
-        if (query == null || query.trim().length() < 3) {
-            return ResponseEntity.ok(List.of());
-        }
-
-        return ResponseEntity.ok(openRouteService.autocomplete(query.trim()));
     }
 }

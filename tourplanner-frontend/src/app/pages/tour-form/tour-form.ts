@@ -6,7 +6,7 @@ import {provideNativeDateAdapter} from '@angular/material/core';
 import {MatIconModule} from '@angular/material/icon';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {TourService} from '../../service/tour-service';
-import {GeocodeSuggestion, RouteService} from '../../service/route-service';
+import {RouteService} from '../../service/route-service';
 import {MapFacadeService} from '../../service/map-facade-service';
 import {Tour, TransportType} from '../../models/tour';
 import {Router} from '@angular/router';
@@ -15,8 +15,6 @@ import {FormsModule} from '@angular/forms';
 import {NgTemplateOutlet} from '@angular/common';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {Map} from '../../components/map/map';
-import {MatAutocompleteModule, MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
-import {debounceTime, distinctUntilChanged, of, Subject, switchMap} from 'rxjs';
 
 @Component({
   selector: 'app-tour-form',
@@ -33,11 +31,7 @@ import {debounceTime, distinctUntilChanged, of, Subject, switchMap} from 'rxjs';
     MatButton,
     FormsModule,
     NgTemplateOutlet,
-    Map,
-    MatSelect,
-    MatOption,
-    MatAutocompleteModule,
-    MatIconModule,
+    Map
   ],
   templateUrl: './tour-form.html',
   styleUrl: './tour-form.css',
@@ -79,15 +73,6 @@ export class TourForm {
     routeGeometry: null,
   });
 
-  readonly fromSuggestions = signal<GeocodeSuggestion[]>([]);
-  readonly toSuggestions = signal<GeocodeSuggestion[]>([]);
-
-  // Debounced so we don't fire a request on every keystroke - ORS is only
-  // queried once the user pauses typing for 300ms and has typed at least
-  // 3 characters.
-  private readonly fromQuery$ = new Subject<string>();
-  private readonly toQuery$ = new Subject<string>();
-
   constructor() {
     effect(() => {
       const tourId = this.id();
@@ -98,30 +83,6 @@ export class TourForm {
         }
       }
     });
-
-    this.fromQuery$.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-      switchMap(query => query.trim().length >= 3
-        ? this.routeService.autocomplete(query.trim())
-        : of([]))
-    ).subscribe(suggestions => this.fromSuggestions.set(suggestions));
-
-    this.toQuery$.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-      switchMap(query => query.trim().length >= 3
-        ? this.routeService.autocomplete(query.trim())
-        : of([]))
-    ).subscribe(suggestions => this.toSuggestions.set(suggestions));
-  }
-
-  onFromSuggestionSelected(_event: MatAutocompleteSelectedEvent): void {
-    this.fromSuggestions.set([]);
-  }
-
-  onToSuggestionSelected(_event: MatAutocompleteSelectedEvent): void {
-    this.toSuggestions.set([]);
   }
 
   updateField<K extends keyof Tour>(field: K, value: any): void {
@@ -142,14 +103,6 @@ export class TourForm {
 
       return updated;
     });
-
-    if (field === 'from') {
-      this.fromQuery$.next(finalValue as string);
-    }
-
-    if (field === 'to') {
-      this.toQuery$.next(finalValue as string);
-    }
 
     this.clearError();
   }
