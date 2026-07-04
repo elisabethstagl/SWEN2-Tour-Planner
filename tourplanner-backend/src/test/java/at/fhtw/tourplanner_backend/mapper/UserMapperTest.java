@@ -13,11 +13,11 @@ class UserMapperTest {
     void toEntity_mapsUsernameAndEmail_andStoresOnlyTheEncodedPasswordItWasGiven() {
         UserRequestDto dto = new UserRequestDto("bob", "bob@example.com", "plainPassword1");
 
-        User user = UserMapper.toEntity(dto, "hashed-value");
+        User user = UserMapper.toEntity(dto, "encodedPassword");
 
         assertThat(user.getUsername()).isEqualTo("bob");
         assertThat(user.getEmail()).isEqualTo("bob@example.com");
-        assertThat(user.getPassword()).isEqualTo("hashed-value");
+        assertThat(user.getPassword()).isEqualTo("encodedPassword");
     }
 
     @Test
@@ -26,7 +26,7 @@ class UserMapperTest {
         user.setId(1L);
         user.setUsername("bob");
         user.setEmail("bob@example.com");
-        user.setPassword("hashed-value");
+        user.setPassword("encodedPassword");
 
         UserResponseDto dto = UserMapper.toResponseDto(user);
 
