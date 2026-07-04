@@ -42,18 +42,13 @@ public class TourStatsService {
 
         double avgDifficulty = totalDifficulty / logs.size();
         double avgDistance = totalDistance / logs.size();
-        double avgTime = totalTime / logs.size();
+        double avgTimeHours = (totalTime / logs.size()) / 60.0;
 
-        double score = 100.0;
+        double difficultyPenalty = (avgDifficulty - 1) * 12.5;
+        double distancePenalty = Math.min(avgDistance, 30);
+        double timePenalty = Math.min(avgTimeHours * 2.5, 20);
 
-        // Higher difficulty reduces child-friendliness
-        score -= (avgDifficulty - 1) * 15;
-
-        // Longer distance reduces child-friendliness
-        score -= avgDistance * 1.5;
-
-        // Longer duration reduces child-friendliness
-        score -= avgTime * 0.1;
+        double score = 100.0 - difficultyPenalty - distancePenalty - timePenalty;
 
         if (score < 0) {
             score = 0;
