@@ -1,5 +1,6 @@
 import {Injectable} from "@angular/core";
 import {HttpClient} from '@angular/common/http';
+import { Observable } from "rxjs";
 
 export interface AuthResponse {
   token: string;
@@ -16,6 +17,7 @@ export interface RegisterRequest {
 })
 export class AuthService {
   private authApiUrl = 'http://localhost:8080/api/auth';
+  private tokenValidationUrl = 'http://localhost:8080/api/token';
   private usersApiUrl = 'http://localhost:8080/api/users';
 
   constructor(private http: HttpClient) {}
@@ -49,5 +51,9 @@ export class AuthService {
 
   isLoggedIn(): boolean {
     return this.getToken() !== null;
+  }
+
+  validateToken(): Observable<void> {
+    return this.http.get<void>(`${this.tokenValidationUrl}/validate`);
   }
 }
