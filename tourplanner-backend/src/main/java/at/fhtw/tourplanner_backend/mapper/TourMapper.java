@@ -9,21 +9,15 @@ public class TourMapper {
 
     public static Tour toEntity(TourRequestDto dto, User user) {
         Tour tour = new Tour();
-
-        tour.setUser(user);
-        tour.setName(dto.getName());
-        tour.setDescription(dto.getDescription());
-        tour.setFromLocation(dto.getFrom());
-        tour.setToLocation(dto.getTo());
-        tour.setTransportType(dto.getTransportType());
-        tour.setDistanceKm(dto.getDistance());
-        tour.setEstimatedTime(dto.getEstimatedTime());
-        tour.setRouteGeometry(dto.getRouteGeometry());
-
+        applyFields(tour, dto, user);
         return tour;
     }
 
     public static void updateEntity(Tour tour, TourRequestDto dto, User user) {
+        applyFields(tour, dto, user);
+    }
+
+    private static void applyFields(Tour tour, TourRequestDto dto, User user) {
         tour.setUser(user);
         tour.setName(dto.getName());
         tour.setDescription(dto.getDescription());
@@ -41,18 +35,18 @@ public class TourMapper {
 
     public static TourResponseDto toResponseDto(Tour tour) {
         return new TourResponseDto(
-                tour.getId(),
-                tour.getUser().getId(),
-                tour.getName(),
-                tour.getDescription(),
-                tour.getFromLocation(),
-                tour.getToLocation(),
-                tour.getTransportType(),
-                tour.getDistanceKm(),
-                tour.getEstimatedTime(),
-                tour.getRouteGeometry(),
-                tour.getPopularity(),
-                tour.getChildFriendliness()
+            tour.getId(),
+            tour.getUser().getId(),
+            tour.getName(),
+            tour.getDescription(),
+            tour.getFromLocation(),
+            tour.getToLocation(),
+            tour.getTransportType(),
+            tour.getDistanceKm(),
+            tour.getEstimatedTime(),
+            tour.getMapImagePath(),
+            tour.getPopularity(),
+            tour.getChildFriendliness()
         );
     }
 }

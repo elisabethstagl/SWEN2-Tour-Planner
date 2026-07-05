@@ -1,30 +1,33 @@
 package at.fhtw.tourplanner_backend.services;
 
 import at.fhtw.tourplanner_backend.entities.TourLog;
-import at.fhtw.tourplanner_backend.repositories.TourLogRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-//popularity (log count) and child-friendliness (0-100 score based on
-// recorded difficulty, distance and time across all logs of a tour).
-
+/**
+ * popularity (log count) and child-friendliness (0-100 score based on
+ * recorded difficulty, distance and time across all logs of a tour).
+ *
+ * Pure computation over an already-loaded list of logs - the caller is
+ * responsible for fetching a tour's logs.
+ */
 @Service
-@RequiredArgsConstructor
 public class TourStatsService {
 
-    private final TourLogRepository tourLogRepository;
-
-    public int computePopularity(Long tourId) {
-        List<TourLog> logs = tourLogRepository.findByTourId(tourId);
+    public int computePopularity(List<TourLog> logs) {
         return logs.size();
     }
 
-    public Double computeChildFriendliness(Long tourId) {
-        List<TourLog> logs = tourLogRepository.findByTourId(tourId);
+    public Double computeChildFriendliness(List<TourLog> logs) {
+        // Only logs with all three recorded values can contribute to the average
+        List<TourLog> completeLogs = logs.stream()
+                .filter(log -> log.getDifficulty() != null
+                        && log.getTotalDistance() != null
+                        && log.getTotalTime() != null)
+                .toList();
 
-        if (logs.isEmpty()) {
+        if (completeLogs.isEmpty()) {
             return null;
         }
 
@@ -32,7 +35,7 @@ public class TourStatsService {
         double totalDistance = 0;
         double totalTime = 0;
 
-        for (TourLog log : logs) {
+        for (TourLog log : completeLogs) {
             totalDifficulty += log.getDifficulty();
             totalDistance += log.getTotalDistance();
             totalTime += log.getTotalTime();

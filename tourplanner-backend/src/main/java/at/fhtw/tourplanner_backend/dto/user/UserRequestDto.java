@@ -18,6 +18,7 @@ public class UserRequestDto {
 
     @NotBlank
     @Email
+    @Size(max = 100)
     private String email;
 
     @NotBlank

@@ -3,6 +3,7 @@ package at.fhtw.tourplanner_backend.controllers;
 import at.fhtw.tourplanner_backend.dto.auth.LoginRequestDto;
 import at.fhtw.tourplanner_backend.dto.auth.LoginResponseDto;
 import at.fhtw.tourplanner_backend.services.AuthService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

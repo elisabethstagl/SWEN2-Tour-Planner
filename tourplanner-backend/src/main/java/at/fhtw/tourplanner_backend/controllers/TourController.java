@@ -39,9 +39,8 @@ public class TourController {
 
     @PutMapping("/{id}")
     public ResponseEntity<TourResponseDto> updateTour(
-            @Valid
             @PathVariable Long id,
-            @RequestBody TourRequestDto tour) {
+            @Valid @RequestBody TourRequestDto tour) {
 
         return ResponseEntity.ok(tourService.updateTour(id, tour));
     }

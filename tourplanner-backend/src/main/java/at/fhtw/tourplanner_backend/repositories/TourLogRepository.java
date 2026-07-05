@@ -16,6 +16,4 @@ public interface TourLogRepository extends JpaRepository<TourLog, Long> {
     List<TourLog> findAllByTourUserUsername(String username);
 
     Optional<TourLog> findByIdAndTourUserUsername(Long id, String username);
-
-    boolean existsByIdAndTourUserUsername(Long id, String username);
 }

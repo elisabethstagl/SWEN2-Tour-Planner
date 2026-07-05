@@ -3,6 +3,7 @@ package at.fhtw.tourplanner_backend.controllers;
 import at.fhtw.tourplanner_backend.dto.user.UserRequestDto;
 import at.fhtw.tourplanner_backend.dto.user.UserResponseDto;
 import at.fhtw.tourplanner_backend.services.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +26,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserResponseDto> registerUser(@RequestBody UserRequestDto user) {
+    public ResponseEntity<UserResponseDto> registerUser(@Valid @RequestBody UserRequestDto user) {
         return ResponseEntity.ok(userService.register(user));
     }
 }

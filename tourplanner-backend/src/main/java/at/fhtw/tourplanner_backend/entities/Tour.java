@@ -3,7 +3,6 @@ package at.fhtw.tourplanner_backend.entities;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
 
 import java.time.Instant;
 
@@ -51,8 +50,7 @@ public class Tour {
     @Column(name = "route_geometry", columnDefinition = "TEXT")
     private String routeGeometry;
 
-    @ColumnDefault("now()")
-    @Column(name = "created_at")
+    @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
     //field is not stored in the DB, only calculated and returned in JSON responses
