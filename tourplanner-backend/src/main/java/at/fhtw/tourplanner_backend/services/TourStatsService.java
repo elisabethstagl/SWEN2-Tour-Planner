@@ -7,10 +7,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-/**
- * popularity (log count) and child-friendliness (0-100 score based on
- * recorded difficulty, distance and time across all logs of a tour).
- */
+//popularity (log count) and child-friendliness (0-100 score based on
+// recorded difficulty, distance and time across all logs of a tour).
+
 @Service
 @RequiredArgsConstructor
 public class TourStatsService {
@@ -21,7 +20,6 @@ public class TourStatsService {
         List<TourLog> logs = tourLogRepository.findByTourId(tourId);
         return logs.size();
     }
-
 
     public Double computeChildFriendliness(Long tourId) {
         List<TourLog> logs = tourLogRepository.findByTourId(tourId);
@@ -45,7 +43,11 @@ public class TourStatsService {
         double avgTimeHours = (totalTime / logs.size()) / 60.0;
 
         double difficultyPenalty = (avgDifficulty - 1) * 12.5;
+
+        // stops at 30km, every km brings the same penalty points, so 5km = 5 penalty points
         double distancePenalty = Math.min(avgDistance, 30);
+
+        // * 2,5 points per hour, stops at 20 so the penalty won't be too big. 8 hours * 2,5 = 20 => maximum.
         double timePenalty = Math.min(avgTimeHours * 2.5, 20);
 
         double score = 100.0 - difficultyPenalty - distancePenalty - timePenalty;
@@ -58,6 +60,7 @@ public class TourStatsService {
             score = 100;
         }
 
+        // *10 and /10 for score = 85.69 for example instead of normal Math.round(score) = 86
         return Math.round(score * 10.0) / 10.0;
     }
 }

@@ -21,9 +21,7 @@ public class TourLogMapper {
         return log;
     }
 
-    public static void updateEntity(TourLog log,
-                                    TourLogRequestDto dto,
-                                    Tour tour) {
+    public static void updateEntity(TourLog log, TourLogRequestDto dto, Tour tour) {
 
         log.setTour(tour);
         log.setLogDatetime(dto.getLogDatetime());

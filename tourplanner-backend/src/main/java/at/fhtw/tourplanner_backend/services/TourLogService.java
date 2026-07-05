@@ -30,6 +30,7 @@ public class TourLogService {
         return tourLogRepository.findAllByTourUserUsername(username)
                 .stream()
                 .map(tourLog -> TourLogMapper.toResponseDto(tourLog))
+                // .map(TourLogMapper::toResponseDto) same as above
                 .toList();
     }
 
