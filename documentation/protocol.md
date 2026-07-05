@@ -1,5 +1,6 @@
 # SWEN-2 Tour Planner - Protocol
 
+**GitHub Link:**
 https://github.com/elisabethstagl/SWEN2-Tour-Planner
 
 ## Wireframe - UI Flow
@@ -12,13 +13,11 @@ The application includes a persistent header displayed across all pages. It cont
 * Logged out: “Login” and “Register”
 * Logged in: “Profile” and “+ New Tour”
 
-####   Create Tour ("+ New Tour")
-
+#### Create Tour ("+ New Tour")
 Accessible via the header when logged in. Allows users to create a new tour.
 Includes form inputs for all relevant tour details.
 
 ### Home Page
-
 The home page serves as the main discovery interface:
 Displays a list of public or recommended tours in a list view.
 Each tour is presented as a card with key information.
@@ -29,7 +28,6 @@ Clicking on a tour card navigates to the Tour Details Page.
 ### Authentication Flow
 
 #### Login
-
 Triggered via a modal from the header.
 Users can:
 * Enter credentials to sign in.
@@ -42,15 +40,12 @@ Upon successful registration:
 * Redirected back to the Home Page.
 
 ### Profile Page
-
 The profile page allows users to manage their personal account and content:
 * View and edit personal information.
 * Access and manage their created tours and their favorite tours
 * Acts as a central dashboard for user-specific content.
 
-
 ### Tour Details Page
-
 This page provides a detailed view of a selected tour:
 
 * Displays all tour information (e.g., description, metadata).
@@ -60,7 +55,6 @@ User Actions (when authorized):
 * Edit or delete the tour.
 * Add new logs to the tour.
 * Edit or delete existing logs.
-
 
 
 ## UML - Use Case Diagram
@@ -83,12 +77,10 @@ The diagram also shows relationships between use cases:
 
 **Actor**: Guest
 
-**Description** 
-
+**Description**
 This use case describes how a guest logs into the application to become an authenticated (registered) user.
 
 **Preconditions**
-
 * The user already has a registered account.
 * The system is accessible.
 
@@ -114,7 +106,6 @@ The user is prompted to retry login.
 **Actor**: Registered User
 
 **Description**
-
 This use case describes how a logged-in user creates a new tour, including route calculation and map visualization.
 
 **Preconditions**
@@ -122,7 +113,6 @@ This use case describes how a logged-in user creates a new tour, including route
 * The system is connected to external services (map and routing services).
 
 **Main Flow**
-
 The user clicks the “+ New Tour” button.
 The system displays a form for entering tour details (e.g., to, from, description,..).
 The user enters the required information.
@@ -134,11 +124,9 @@ The user confirms and saves the tour.
 The system stores the tour and makes it available on the home page.
 
 **Alternative Flow (Extension: Tour Calculation Failed)**
-
 If route calculation fails the system displays an error message and the user can adjust input data or retry.
 
 **Alternative Flow (Extension: Creation Error)**
-
 If saving the tour fails the system shows a creation error message and the user may retry saving.
 
 **Postconditions**
@@ -167,12 +155,10 @@ If saving the tour fails the system shows a creation error message and the user 
 | Git                   | Version control |
 
 ## Project setup
-
 The backend reads its secrets (DB credentials, JWT secret, OpenRouteService API key) from environment
 variables instead of `application.yaml`.
 
 ### Backend Setup
-
 1. `cd tourplanner-backend`
 2. `cp .env.example .env`
 3. Fill in `.env` with real values:
@@ -187,37 +173,31 @@ variables instead of `application.yaml`.
 ### Frontend Setup
 
 Navigate into the frontend folder
-
 ```bash
 cd tourplanner-frontend
 ```
 
 Install dependencies
-
 ```bash
 npm install
 ```
 
 Start Angular
-
 ```bash
 ng serve
 ```
 
 The frontend is available at
-
 ```
 http://localhost:4200
 ```
 
 The backend is available at
-
 ```
 http://localhost:8080
 ```
 
 ## UML Class Diagram
-
 ![tourplanner_backend_class_diagram.png](tourplanner_backend_class_diagram.png)
 
 ## Sequence Diagram for full-text search
@@ -306,6 +286,17 @@ To solve this issue, a dedicated endpoint (`GET /api/token/validate`) was introd
 
 Additionally, JWT expiration is verified on every request.
 
+### Import & Export of Tour Data
+
+Export and import operate on all of the current user's tours at once, rather than per individual tour.
+
+For the file format JSON was chosen, since the whole application already communicates via JSON, no additional library or format-specific parsing logic was needed.
+
+The imported tours' owner always comes from the authenticated user in the security context (the same `SecurityContextHolder` lookup used everywhere else in the app), never from any field inside the uploaded file.
+
+The whole `importTours()` call is wrapped in a single `@Transactional` block. If any tour or log in a large import file fails partway through, the entire operation is rolled back rather than leaving a half-imported, inconsistent result.
+
+
 ## Unique Feature: Transport Type Filtering
 
 As a unique feature, the application allows users to filter tours by their transport type.
@@ -338,6 +329,7 @@ Several technical challenges were encountered during development.
 - Structuring the application into reusable components and services significantly improved maintainability.
 - Integrating Leaflet with Angular required separating map functionality into a dedicated FacadeService to avoid coupling UI components to the Leaflet API.
 - Implementing address autocomplete with the OpenRouteService Geocoding API proved more complex than initially expected. Different API responses, asynchronous requests and integration with Angular Material's autocomplete component resulted in compatibility issues and unreliable route calculations. Due to time constraints, the feature was postponed for future work.
+
 ### Future Improvements
 
 Although the project fulfills the required functionality, several improvements could be made in the future.
@@ -348,6 +340,16 @@ Although the project fulfills the required functionality, several improvements c
 
 
 ## Unit Tests
+
+The backend is tested with 75 JUnit tests. Tests use Mockito to mock repositories and services, so each test exercises only the logic of the class under test, no database or Spring context is needed.
+
+**Why these classes were chosen:**
+
+- `TourService`, `TourLogService`, `UserService`, `AuthService`, `TourImportExportService` contain the core business logic, most importantly the rule that a user may only ever see or modify their own tours and logs, it's a potential security leak, so every service method is tested both for the happy path and for the "not owned by current user" case, which must consistently result in a `ResourceNotFoundException`. `TourImportExportServiceTest` checks that imported tours are always assigned to the current authenticated user regardless of what the uploaded file contains, and that export only returns the current user's own tours. `TourServiceTest` also covers the full-text search implementation.
+- `TourStatsService` - the popularity and child-friendliness calculations are pure math with several edge cases (no logs, logs with missing values, extreme values). None of this is enforced by the type system, so incorrect logic would silently produce wrong scores instead of throwing an error.
+- `JwtService` - security-critical: if token generation or validation logic is wrong, either invalid tokens get accepted or valid users get locked out. Both directions are tested.
+- `TourMapper`, `TourLogMapper`, `UserMapper` - pure mapping logic between DTOs and entities. If a field is added to Tour/TourRequestDto/TourResponseDto (or the TourLog/User equivalents) and someone forgets to add it in the mapper, these tests catch it immediately instead of it silently disappearing between frontend and database. This test ensures that computed values (popularity/childFriendliness) still end up correctly in the response, even though they don't come from the database.
+- `TourRequestDtoTest`, `TourLogRequestDtoTest`, `UserRequestDtoTest` verify that the Bean Validation annotations (`@NotBlank`, `@Positive`, `@Size`, …) actually reject the inputs they're supposed to; these annotations are the only thing stopping invalid data from ever reaching the database.
 
 ## Tracked Time
 
@@ -394,22 +396,26 @@ Although the project fulfills the required functionality, several improvements c
 
 ### Valeriia Sineva
 
-
 #### Intermediate Submission
-
-| Task / Feature                                 | Time (h) |
-|------------------------------------------------|:--------:|
-| Git Repository Setup and Angular Integration   |   0.5    |
-| **Subtotal**                                   | **0.5**  |
+| Task / Feature                                                              |  Time (h)  | 
+|:----------------------------------------------------------------------------|:----------:|
+| Git Repo Setup and Angular Integration                                      |    0.5     |
+| Use Case Diagram                                                            |    3.0     |
+| Frontend Pages, Routing, Logo, Mock Data, Leaflet Integration Preparation   |    5.0     |
+| Git Workflow & Merge Conflicts Resolving                                    |    1.5     |
+| **Subtotal**                                                                |  **10.0**  |
 
 
 #### Final Submission
-
-| Task / Feature       | Time (h) |
-|----------------------|:--------:|
-| Example of task here |   0.0    |
-| **Subtotal**         | **0.0**  |
-
+| Task / Feature                                                              | Time (h) | 
+|:----------------------------------------------------------------------------|:--------:|
+| Backend Refactoring & Bugfixing                                             |   5.0    |
+| Search                                                                      |   1.0    |
+| Unit Tests                                                                  |   7.0    |
+| Merge Conflict Resolving                                                    |   2.0    |
+| Import/Export                                                               |   5.5    |
+| Protocol                                                                    |   1.5    |
+| **Subtotal**                                                                |  **22**  |
 
 
 ### Total Time
@@ -417,4 +423,4 @@ Although the project fulfills the required functionality, several improvements c
 | Contributor     |      Hours |
 |-----------------|-----------:|
 | Elisabeth Stagl | **82.5 h** |
-| Valeriia Sineva |  **0.5 h** |
+| Valeriia Sineva | **32.0 h** |
