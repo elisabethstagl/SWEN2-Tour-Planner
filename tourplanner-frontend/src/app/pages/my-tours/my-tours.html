@@ -1,13 +1,35 @@
 <app-layout>
   <h2 left-header>My Tours</h2>
 
-  <button
-    left-header
-    matIconButton
-    [matMenuTriggerFor]="filterMenu"
-    aria-label="Filter tours">
-    <mat-icon>filter_list</mat-icon>
-  </button>
+  <div left-header class="header-actions">
+    <button
+      matIconButton
+      [matMenuTriggerFor]="filterMenu"
+      aria-label="Filter tours">
+      <mat-icon>filter_list</mat-icon>
+    </button>
+
+    <button
+      matIconButton
+      (click)="onExport()"
+      aria-label="Export tours">
+      <mat-icon>download</mat-icon>
+    </button>
+
+    <button
+      matIconButton
+      (click)="fileInput.click()"
+      aria-label="Import tours">
+      <mat-icon>upload</mat-icon>
+    </button>
+
+    <input
+      #fileInput
+      type="file"
+      accept="application/json,.json"
+      hidden
+      (change)="onImportFileSelected($event)">
+  </div>
 
   <mat-menu #filterMenu="matMenu">
 
@@ -42,6 +64,10 @@
   </mat-menu>
 
   <div left-content>
+    @if (error()) {
+      <p class="error-message">{{ error() }}</p>
+    }
+
     @for (tour of filteredTours(); track tour.id) {
       <app-tour-list-item [tour]="tour"></app-tour-list-item>
     } @empty {

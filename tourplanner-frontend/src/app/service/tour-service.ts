@@ -29,6 +29,31 @@ type TourLogDto = {
   rating: number;
 };
 
+type TourLogExportDto = {
+  logDatetime: string;
+  comment: string;
+  difficulty: number;
+  totalDistance: number;
+  totalTime: number;
+  rating: number;
+};
+
+type TourExportDto = {
+  name: string;
+  description: string;
+  from: string;
+  to: string;
+  transportType: TransportType;
+  distance: number;
+  estimatedTime: number;
+  routeGeometry?: string | null;
+  logs: TourLogExportDto[];
+};
+
+type TourExportFile = {
+  tours: TourExportDto[];
+};
+
 @Injectable({
   providedIn: 'root'
 })
@@ -397,4 +422,54 @@ export class TourService {
     }
   }
 
+  exportTours(): void {
+    this._error.set('');
+
+    this.http.get<TourExportFile>(`${this.apiUrl}/tours/export`).subscribe({
+      next: file => {
+        const date = new Date().toISOString().slice(0, 10);
+        this.downloadAsJsonFile(file, `tourplanner-export-${date}.json`);
+      },
+      error: () => this._error.set('Could not export tours.')
+    });
+  }
+
+  importTours(file: File, onSuccess?: (importedCount: number) => void): void {
+    this._error.set('');
+
+    file.text().then(text => {
+      let parsed: unknown;
+
+      try {
+        parsed = JSON.parse(text);
+      } catch {
+        this._error.set('Selected file is not a valid JSON.');
+        return;
+      }
+
+      this.http.post<TourDto[]>(`${this.apiUrl}/tours/import`, parsed).subscribe({
+        next: importedTours => {
+          this.loadTours();
+          this.loadLogs();
+
+          if (onSuccess) {
+            onSuccess(importedTours.length);
+          }
+        },
+        error: () => this._error.set('Could not import tours. Check the file format.')
+      });
+    });
+  }
+
+  private downloadAsJsonFile(data: unknown, filename: string): void {
+    const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    link.click();
+
+    URL.revokeObjectURL(url);
+  }
 }

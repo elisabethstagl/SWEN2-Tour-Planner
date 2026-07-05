@@ -6,6 +6,7 @@ import {TourService} from '../../service/tour-service';
 import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
 import {TransportType} from '../../models/tour';
 import {MatIconButton} from '@angular/material/button';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-my-tours',
@@ -24,8 +25,10 @@ import {MatIconButton} from '@angular/material/button';
 })
 export class MyToursComponent {
   private readonly tourService = inject(TourService);
+  private readonly snackBar = inject(MatSnackBar);
 
   readonly tours = this.tourService.tours;
+  readonly error = this.tourService.error;
   readonly selectedTransportType = signal<TransportType | 'all'>('all');
 
   readonly transportTypes: TransportType[] = [
@@ -53,6 +56,37 @@ export class MyToursComponent {
 
   setTransportFilter(type: TransportType | 'all'): void {
     this.selectedTransportType.set(type);
+  }
+
+  onExport(): void {
+    this.tourService.exportTours();
+  }
+
+  onImportFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    this.tourService.importTours(file, importedCount => {
+      const tourWord = importedCount === 1 ? 'tour' : 'tours';
+
+      this.snackBar.open(
+        `${importedCount} ${tourWord} imported successfully!`,
+        '',
+        {
+          duration: 2000,
+          horizontalPosition: 'center',
+          verticalPosition: 'top',
+          panelClass: ['success-snackbar']
+        }
+      );
+    });
+
+    // reset so selecting the same file again still triggers a change event
+    input.value = '';
   }
 
   getTransportLabel(type: TransportType | 'all'): string {
