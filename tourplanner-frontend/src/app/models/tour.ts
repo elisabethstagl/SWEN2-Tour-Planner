@@ -11,7 +11,7 @@ export interface Tour {
   transportType: TransportType;
   distance: number;
   estimatedTime: number;
-  mapUrl?: string;
+  routeGeometry?: [number, number][] | null;
   popularity?: number;
   childFriendliness?: number | null;
 }

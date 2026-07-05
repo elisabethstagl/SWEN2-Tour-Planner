@@ -15,9 +15,8 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
-
-import static io.netty.util.AsciiString.containsIgnoreCase;
 
 @Service
 @RequiredArgsConstructor
@@ -65,6 +64,8 @@ public class TourService {
     }
 
     public TourResponseDto updateTour(Long id, TourRequestDto dto) {
+
+        //gets username for comparison if user is allowed to update tour
         String username = getCurrentUsername();
 
         Tour existingTour = tourRepository.findByIdAndUserUsername(id, username)
@@ -121,6 +122,7 @@ public class TourService {
 
     // HELPER
 
+    // sets the computed fields (child friendliness and popularity) -> calculated in tourStatsService
     private Tour withComputedFields(Tour tour) {
         return withComputedFieldsAndLogs(tour).tour();
     }
@@ -159,7 +161,8 @@ public class TourService {
         }
 
         for (TourLog log : logs) {
-            if (containsIgnoreCase(log.getComment(), searchTerm)) {
+            String comment = log.getComment();
+            if (comment != null && comment.toLowerCase().contains(searchTerm)) {
                 return true;
             }
         }

@@ -41,20 +41,19 @@ public class TourStatsService {
             totalTime += log.getTotalTime();
         }
 
-        double avgDifficulty = totalDifficulty / completeLogs.size();
-        double avgDistance = totalDistance / completeLogs.size();
-        double avgTime = totalTime / completeLogs.size();
+        double avgDifficulty = totalDifficulty / logs.size();
+        double avgDistance = totalDistance / logs.size();
+        double avgTimeHours = (totalTime / logs.size()) / 60.0;
 
-        double score = 100.0;
+        double difficultyPenalty = (avgDifficulty - 1) * 12.5;
 
-        // Higher difficulty reduces child-friendliness
-        score -= (avgDifficulty - 1) * 15;
+        // stops at 30km, every km brings the same penalty points, so 5km = 5 penalty points
+        double distancePenalty = Math.min(avgDistance, 30);
 
-        // Longer distance reduces child-friendliness
-        score -= avgDistance * 1.5;
+        // * 2,5 points per hour, stops at 20 so the penalty won't be too big. 8 hours * 2,5 = 20 => maximum.
+        double timePenalty = Math.min(avgTimeHours * 2.5, 20);
 
-        // Longer duration reduces child-friendliness
-        score -= avgTime * 0.1;
+        double score = 100.0 - difficultyPenalty - distancePenalty - timePenalty;
 
         if (score < 0) {
             score = 0;
@@ -64,6 +63,7 @@ public class TourStatsService {
             score = 100;
         }
 
+        // *10 and /10 for score = 85.69 for example instead of normal Math.round(score) = 86
         return Math.round(score * 10.0) / 10.0;
     }
 }

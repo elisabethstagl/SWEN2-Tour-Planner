@@ -26,7 +26,11 @@ public class TourMapper {
         tour.setTransportType(dto.getTransportType());
         tour.setDistanceKm(dto.getDistance());
         tour.setEstimatedTime(dto.getEstimatedTime());
-        tour.setMapImagePath(dto.getMapUrl());
+
+        //only overwrites the stored route if something changed (to, from, transport type)
+        if (dto.getRouteGeometry() != null) {
+            tour.setRouteGeometry(dto.getRouteGeometry());
+        }
     }
 
     public static TourResponseDto toResponseDto(Tour tour) {

@@ -52,6 +52,42 @@ img[right-content] {
   color: white !important;
 }
 
+.title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: .75rem;
+}
+
+.transport-chip {
+  text-transform: uppercase;
+  font-size: 12px;
+}
+
+.transport-chip .mat-icon {
+  color: antiquewhite;
+}
+
+.transport-chip.bike {
+  background: #61b663;
+}
+
+.transport-chip.walk {
+  background: #9868d3;
+}
+
+.transport-chip.hike {
+  background: #9e847a;
+}
+
+.transport-chip.car {
+  background: #d8625e;
+}
+
+.transport-chip.wheelchair {
+  background: #609ddd;
+}
+
 
 /* MOBILE */
 

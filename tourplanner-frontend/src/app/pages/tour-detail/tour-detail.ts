@@ -5,10 +5,12 @@ import {Layout} from '../../layout/layout';
 import {TourDetailsCard} from '../../components/tour-details-card/tour-details-card';
 import {TourLogCard} from '../../components/tour-log-card/tour-log-card';
 import {EditDeleteButtons} from '../../components/edit-delete-buttons/edit-delete-buttons';
-import {MatButton} from "@angular/material/button";
+import {MatButton, MatMiniFabButton} from "@angular/material/button";
 import {Map} from '../../components/map/map';
-import {Tour} from '../../models/tour';
+import {Tour, TransportType} from '../../models/tour';
 import { RouteService } from '../../service/route-service';
+import {MatIcon} from '@angular/material/icon';
+import {NgClass} from '@angular/common';
 
 @Component({
   selector: 'app-tour-detail',
@@ -20,7 +22,10 @@ import { RouteService } from '../../service/route-service';
     TourDetailsCard,
     TourLogCard,
     EditDeleteButtons,
-    Map
+    Map,
+    MatIcon,
+    MatMiniFabButton,
+    NgClass
   ],
   templateUrl: './tour-detail.html',
   styleUrl: './tour-detail.css',
@@ -74,6 +79,11 @@ export class TourDetail {
   routePoints = signal<[number, number][] | null>(null);
 
   loadRouteForTour(tour: Tour): void {
+    if (tour.routeGeometry && tour.routeGeometry.length > 0) {
+      this.routePoints.set(tour.routeGeometry);
+      return;
+    }
+
     this.routeService.calculateRoute({
       from: tour.from,
       to: tour.to,
@@ -86,5 +96,35 @@ export class TourDetail {
         console.error('Could not load route');
       }
     });
+  }
+
+  getTransportLabel(type: TransportType): string {
+    switch (type) {
+      case 'bike':
+        return 'Bike';
+      case 'hike':
+        return 'Hike';
+      case 'walk':
+        return 'Walk';
+      case 'wheelchair':
+        return 'Wheelchair';
+      case 'car':
+        return 'Car';
+    }
+  }
+
+  getTransportIcon(type: TransportType): string {
+    switch (type) {
+      case 'bike':
+        return 'directions_bike';
+      case 'hike':
+        return 'hiking';
+      case 'walk':
+        return 'directions_walk';
+      case 'wheelchair':
+        return 'accessible';
+      case 'car':
+        return 'directions_car';
+    }
   }
 }

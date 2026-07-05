@@ -13,7 +13,7 @@ type TourDto = {
   transportType: TransportType;
   distance: number;
   estimatedTime: number;
-  mapUrl?: string;
+  routeGeometry?: string | null;
   popularity?: number;
   childFriendliness?: number | null;
 };
@@ -224,8 +224,7 @@ export class TourService {
       description: description,
       from: from,
       to: to,
-      estimatedTime: estimatedTime,
-      mapUrl: tour.mapUrl?.trim() || undefined
+      estimatedTime: estimatedTime
     };
   }
 
@@ -240,7 +239,7 @@ export class TourService {
       transportType: tour.transportType,
       distance: tour.distance,
       estimatedTime: tour.estimatedTime,
-      mapUrl: tour.mapUrl
+      routeGeometry: tour.routeGeometry ? JSON.stringify(tour.routeGeometry) : undefined
     };
   }
 
@@ -255,7 +254,7 @@ export class TourService {
       transportType: tourDto.transportType,
       distance: tourDto.distance,
       estimatedTime: tourDto.estimatedTime,
-      mapUrl: tourDto.mapUrl,
+      routeGeometry: this.parseRouteGeometry(tourDto.routeGeometry),
       popularity: tourDto.popularity,
       childFriendliness: tourDto.childFriendliness
     };
@@ -384,6 +383,18 @@ export class TourService {
       },
       error: () => this._error.set('Could not search tours.')
     });
+  }
+
+  private parseRouteGeometry(raw: string | null | undefined): [number, number][] | null {
+    if (!raw) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(raw) as [number, number][];
+    } catch {
+      return null;
+    }
   }
 
 }

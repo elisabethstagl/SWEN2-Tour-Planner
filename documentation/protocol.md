@@ -4,7 +4,7 @@ https://github.com/elisabethstagl/SWEN2-Tour-Planner
 
 ## Wireframe - UI Flow
 ![tourplanner-mockup.png](tourplanner-mockup.png)
-This is still a draft of our first planned version, there might still be changes along the way.
+The following wireframe represents the initial concept of the application. During development the final user interface evolved to better match the project requirements. The major design changes are described later in this protocol.
 
 ### Global Header
 The application includes a persistent header displayed across all pages. It contains a search bar for browsing tours and two action buttons that adapt based on the user’s authentication state:
@@ -145,10 +145,33 @@ If saving the tour fails the system shows a creation error message and the user 
 * **On success:** The new tour is saved and visible to the user.
 * **On failure:** No tour is created
 
-## Backend setup
+## Technology Stack
+
+| Technology            | Purpose |
+|-----------------------|---------|
+| Angular               | Frontend framework used to implement the web application |
+| TypeScript            | Programming language for Angular |
+| Spring Boot           | Backend framework providing REST APIs |
+| Java 25               | Backend programming language |
+| PostgreSQL            | Relational database for storing users, tours and tour logs |
+| Hibernate / JPA       | Object-relational mapper (ORM) |
+| Spring Security       | Authentication and authorization |
+| JSON Web Tokens (JWT) | Stateless authentication between frontend and backend |
+| OpenRouteService API  | Calculates tour distance and estimated duration |
+| Leaflet               | Displays tours on an interactive map |
+| Docker Compose        | Starts PostgreSQL and pgAdmin |
+| Maven                 | Dependency management and backend build tool |
+| Angular Material      | User interface components |
+| Log4j2                | Logging framework |
+| JUnit                 | Unit testing framework |
+| Git                   | Version control |
+
+## Project setup
 
 The backend reads its secrets (DB credentials, JWT secret, OpenRouteService API key) from environment
 variables instead of `application.yaml`.
+
+### Backend Setup
 
 1. `cd tourplanner-backend`
 2. `cp .env.example .env`
@@ -161,35 +184,85 @@ variables instead of `application.yaml`.
 
 `.env` is gitignored and must never be committed. `.env.example` is the committed template.
 
+### Frontend Setup
+
+Navigate into the frontend folder
+
+```bash
+cd tourplanner-frontend
+```
+
+Install dependencies
+
+```bash
+npm install
+```
+
+Start Angular
+
+```bash
+ng serve
+```
+
+The frontend is available at
+
+```
+http://localhost:4200
+```
+
+The backend is available at
+
+```
+http://localhost:8080
+```
+
 ## UML Class Diagram
+
+![tourplanner_backend_class_diagram.png](tourplanner_backend_class_diagram.png)
 
 ## Sequence Diagram for full-text search
 
+The search first loads all tours belonging to the currently authenticated user. Before filtering, the backend enriches every tour with computed attributes. For each tour, `TourStatsService` calculates the popularity and child-friendliness values.
+
+If the search query is empty, all tours are returned after mapping them to response DTOs. If a search term exists, the database first searches the direct tour fields such as name, description, start location, destination and transport type. Afterwards, the service layer additionally checks computed values and tour logs. This is necessary because popularity and child-friendliness are not simple static input fields but are calculated from tour log data.
+
+Finally, all matching tours are mapped to `TourResponseDto` objects and returned to the Angular frontend, where the result list is updated.
+
+
 ## Designs, Failures and Selected Solutions
 
-### Frontend Framework and UI Design
+## Architecture
 
-The application was implemented using Angular as the frontend framework. For the user interface, 
-Angular Material was integrated. This provided pre-built UI components such as buttons, forms, and dialogs, 
-allowing for a consistent design and faster development process. 
-It also ensured responsiveness and accessibility without needing to implement these features from scratch.
+The application follows a layered client-server architecture with a separate Angular frontend and Spring Boot backend.
 
-### Component and Layout Architecture
+### Frontend Architecture
 
-To maintain a clean and understandable structure, the application was divided into:
+The frontend is structured into:
 
-* Pages (e.g., Home, Profile, Tour Details)
-* Components (reusable UI elements)
-* Layout (one reusable component for almost every page, two column layout. This layout wraps the individual pages, 
-* ensuring a consistent UI across the application and avoiding code duplication)
-* Models (data structures)
+- **Pages**: route-level views such as Home, Dashboard, My Tours and Tour Details
+- **Components**: reusable UI elements such as header, forms, dialogs and tour cards
+- **Services**: communication and state handling, for example `TourService`, `AuthService` and the Leaflet `FacadeService`
+- **Guards**: protect routes that require authentication
+- **Interceptors**: automatically attach the JWT token to backend requests
+- **Models / DTOs**: TypeScript interfaces representing tours, users and tour logs
 
-### State Management and Services
+The frontend focuses on displaying data, handling user interaction and communicating with the backend through HTTP requests.
 
-A TourService was implemented to handle all tour-related operations such as creating, reading, updating, and deleting tours (CRUD operations).
-This service acts as a central communication layer between components and can be compared to a Mediator pattern, as it coordinates data flow and 
-business logic instead of letting components communicate directly with each other.
+### Backend Architecture
 
+The backend is structured into the following packages:
+
+- **config**: application and security configuration
+- **controllers**: REST endpoints for authentication, users, tours, tour logs, search, import and export
+- **dto**: data transfer objects used for API requests and responses
+- **entities**: JPA entities mapped to PostgreSQL tables
+- **exceptions**: custom exceptions and error handling
+- **mapper**: conversion between entities and DTOs
+- **repositories**: Spring Data JPA repositories for database access
+- **security**: JWT handling, authentication filter and security-related classes
+- **services**: business logic and coordination between controllers and repositories
+
+The backend follows a layered architecture. Controllers receive HTTP requests, services contain the business logic, repositories access the database, and entities represent the persistent data model.
 ### Form Handling – Challenges and Decisions
 One of the main challenges during development was choosing the appropriate form handling approach in Angular. 
 The available options included:
@@ -205,18 +278,73 @@ After evaluating the options, template-driven forms using ngModel were chosen be
 * They are simpler to implement for smaller forms
 * They were sufficient for the current scope of the application
 
-Signal-based forms were not used because they are still experimental, and reactive forms were not selected to avoid additional complexity at this stage.
-This might also change depending on more research or the later backend integration.
+Template-driven forms proved sufficient for the project's scope and integrated well with Angular Material while keeping the implementation straightforward.
+
+## Design Changes During Development
+
+The application underwent several design changes throughout the development process.
+
+The initial concept focused on a traditional homepage with public tour cards, favorite tours and a profile-centered navigation. As development progressed and the project requirements became clearer, the user interface was redesigned to better support the required functionality and provide a more intuitive user experience.
+
+The final design differs from the original wireframe. Instead of displaying tours on the homepage, the landing page now serves as a simple entry point containing only two buttons: **Login** and **Register**. This keeps the initial interface clean and allows users to authenticate before accessing the application's main functionality.
+
+After a successful login, users are redirected to the **Dashboard**. The dashboard contains a header with a search bar, navigation to the user's tours and a logout button. The main content is an interactive Leaflet map covering most of the page together with a side panel for creating new tours.
+
+The **My Tours** page provides an overview of all tours created by the authenticated user. Selecting a tour opens the corresponding details page, where users can view, edit and manage the tour as well as its associated tour logs.
+
+Overall, the redesign focused on simplifying the user interface by removing unnecessary elements and reducing visual clutter. The final layout is more minimalistic, easier to navigate and better aligned with the project requirements while still providing quick access to all essential features.
+
+### Authentication
+
+Authentication is implemented using Spring Security together with JWT (JSON Web Tokens).
+
+After a successful login the backend generates a signed JWT containing the username and user ID. The frontend stores the token in the browser's localStorage and automatically includes it in the Authorization header for every protected request.
+
+During development we discovered that after deleting the database tables the browser still contained an old JWT. Since the frontend only checked whether a token existed, users could still access protected pages although the user no longer existed.
+
+To solve this issue, a dedicated endpoint (`GET /api/token/validate`) was introduced. Before entering protected routes, the Angular route guard validates the token with the backend. If the backend responds with **401 Unauthorized**, the stored token is removed and the user is redirected to the login page.
+
+Additionally, JWT expiration is verified on every request.
+
+## Unique Feature: Transport Type Filtering
+
+As a unique feature, the application allows users to filter tours by their transport type.
+
+Each tour is assigned a transport type (e.g., walking, hiking, cycling or driving), which is displayed directly alongside the tour information. Users can use the filter to quickly limit the displayed tours to a specific transport type.
+This feature improves the overall usability of the application, especially for users who manage a larger number of tours. Instead of browsing through all available tours, users can immediately focus on tours that match their preferred mode of transportation.
+
+From a technical perspective, the selected transport type is used as an additional filter criterion in the frontend and the displayed tour list is updated dynamically. The transport type is also shown as part of every tour card, providing important information at a glance.
+
+## Implemented Design Pattern: Facade Pattern
+
+The project implements the Facade Pattern for the integration of the Leaflet map.
+
+Instead of allowing different components to communicate directly with the Leaflet library, all map-related functionality is encapsulated inside the `FacadeService`. The service provides a simplified interface for displaying maps, creating markers, rendering routes and updating the displayed tour.
+
+Whenever a component needs to display or update a map, it only interacts with the `FacadeService`. The service internally coordinates the communication with Leaflet and hides the implementation details from the rest of the application.
+
+Using the Facade Pattern provides several advantages:
+
+- Components remain independent of the Leaflet API.
+- Map-related logic is centralized in a single location.
+- Code duplication is reduced.
+- Future changes to the map implementation only affect the FacadeService instead of multiple components.
+- The application becomes easier to maintain and extend.
 
 ### Challenges and Lessons Learned
-* Understanding the differences between Angular form approaches required additional research.
-* Structuring the application into meaningful folders (components, pages, layout, models) improved maintainability and clarity.
-* Creating reusable layout components significantly reduced duplication and simplified UI consistency.
+Several technical challenges were encountered during development.
 
+- Choosing the appropriate Angular form approach required additional research before deciding on template-driven forms.
+- Structuring the application into reusable components and services significantly improved maintainability.
+- Integrating Leaflet with Angular required separating map functionality into a dedicated FacadeService to avoid coupling UI components to the Leaflet API.
+- Implementing address autocomplete with the OpenRouteService Geocoding API proved more complex than initially expected. Different API responses, asynchronous requests and integration with Angular Material's autocomplete component resulted in compatibility issues and unreliable route calculations. Due to time constraints, the feature was postponed for future work.
 ### Future Improvements
-* Evaluate switching to reactive forms or signal forms for better scalability and validation handling.
-* Expand the service layer for better separation of business logic.
-* Integrate backend communication for persistent data storage.
+
+Although the project fulfills the required functionality, several improvements could be made in the future.
+
+- Implement address autocomplete using the OpenRouteService Geocoding API to improve usability during tour creation.
+- Add additional filters such as distance, estimated duration or rating.
+- Improve responsive behaviour for smaller screen sizes.
 
 
 ## Unit Tests
@@ -225,24 +353,68 @@ This might also change depending on more research or the later backend integrati
 
 ### Elisabeth Stagl
 
-| Task / Feature                                                  | Time (in hours) | 
-|:----------------------------------------------------------------|:---------------:|
-| Git Repo Setup and Spring Boot Integration                      |       0,5       | 
-| Frontend Pages, basic Design, Angular Material                  |       4,0       | 
-| Layout UI skeleton, components for pages                        |       2,0       |
-| First CRUD tries, adding models, layout new tour + new log page |       4,5       | 
-| create + delete tour, edit and delete buttons component         |       2,5       |
-| form changes                                                    |       0,5       |
-| CRUD tour and tour logs                                         |       4,0       |
-| Protocol                                                        |       1,5       |
+#### Intermediate Submission
+
+| Task / Feature                                                  | Time (h) |
+|-----------------------------------------------------------------|:--------:|
+| Git Repository Setup and Spring Boot Integration                |   0.5    |
+| Frontend Pages, Basic Design, Angular Material                  |   4.0    |
+| Layout Skeleton and Page Components                             |   2.0    |
+| Initial CRUD Implementation and Models                          |   4.5    |
+| Create/Delete Tour, Edit/Delete Components                      |   2.5    |
+| Form Improvements                                               |   0.5    |
+| CRUD for Tours and Tour Logs                                    |   4.0    |
+| Protocol                                                        |   1.5    |
+| **Subtotal**                                                    | **19.5** |
+
+#### Final Submission
+
+| Task / Feature                                                  | Time (h) |
+|-----------------------------------------------------------------|:--------:|
+| Leaflet Integration                                             |   4.0    |
+| Research (Leaflet, ORS, Flyway, Log4j2, JWT, Spring Security…)  |  10.0    |
+| Database and Flyway                                             |   5.0    |
+| Backend Setup                                                   |   3.5    |
+| Backend Development                                             |   6.5    |
+| Frontend–Backend Communication                                  |   2.0    |
+| Authentication (Login)                                          |   5.5    |
+| Authorization                                                   |   3.0    |
+| OpenRouteService Integration                                    |   7.5    |
+| Log4j2 Integration                                              |   1.5    |
+| Environment Configuration (.env)                                |   1.0    |
+| Computed Tour Attributes                                        |   2.0    |
+| Full-Text Search                                                |   3.0    |
+| UI Redesign                                                     |   3.0    |
+| Final Code Improvements                                         |   2.0    |
+| Final Protocol                                                  |   2.5    |
+| Code Documentation and Comments                                 |   1.0    |
+| **Subtotal**                                                    | **63.0** |
+
+
 
 ### Valeriia Sineva
 
-| Task / Feature                         | Time (in hours) | 
-|:---------------------------------------|:---------------:|
-| Git Repo Setup and Angular Integration |       0,5       | 
+
+#### Intermediate Submission
+
+| Task / Feature                                 | Time (h) |
+|------------------------------------------------|:--------:|
+| Git Repository Setup and Angular Integration   |   0.5    |
+| **Subtotal**                                   | **0.5**  |
 
 
-### Additional informations
-So far for the intermediate hand-in not all parts are well designed or thought out, this is still in progress.
-There are still pages and functionality missing as well as a search form and other features.
+#### Final Submission
+
+| Task / Feature       | Time (h) |
+|----------------------|:--------:|
+| Example of task here |   0.0    |
+| **Subtotal**         | **0.0**  |
+
+
+
+### Total Time
+
+| Contributor     |      Hours |
+|-----------------|-----------:|
+| Elisabeth Stagl | **82.5 h** |
+| Valeriia Sineva |  **0.5 h** |
