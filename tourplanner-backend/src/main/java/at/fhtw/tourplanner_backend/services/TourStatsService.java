@@ -41,9 +41,9 @@ public class TourStatsService {
             totalTime += log.getTotalTime();
         }
 
-        double avgDifficulty = totalDifficulty / logs.size();
-        double avgDistance = totalDistance / logs.size();
-        double avgTimeHours = (totalTime / logs.size()) / 60.0;
+        double avgDifficulty = totalDifficulty / completeLogs.size();
+        double avgDistance = totalDistance / completeLogs.size();
+        double avgTimeHours = (totalTime / completeLogs.size()) / 60.0;
 
         double difficultyPenalty = (avgDifficulty - 1) * 12.5;
 

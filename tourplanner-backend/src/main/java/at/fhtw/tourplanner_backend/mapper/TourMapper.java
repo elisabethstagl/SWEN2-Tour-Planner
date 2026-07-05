@@ -44,7 +44,7 @@ public class TourMapper {
             tour.getTransportType(),
             tour.getDistanceKm(),
             tour.getEstimatedTime(),
-            tour.getMapImagePath(),
+            tour.getRouteGeometry(),
             tour.getPopularity(),
             tour.getChildFriendliness()
         );

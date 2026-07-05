@@ -15,7 +15,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -161,13 +160,16 @@ public class TourService {
         }
 
         for (TourLog log : logs) {
-            String comment = log.getComment();
-            if (comment != null && comment.toLowerCase().contains(searchTerm)) {
+            if (containsIgnoreCase(log.getComment(), searchTerm)) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    private static boolean containsIgnoreCase(String value, String searchTerm) {
+        return value != null && value.toLowerCase().contains(searchTerm);
     }
 
     private record TourWithLogs(Tour tour, List<TourLog> logs) {}

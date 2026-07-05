@@ -29,7 +29,7 @@ class TourMapperTest {
         assertThat(tour.getTransportType()).isEqualTo("hike");
         assertThat(tour.getDistanceKm()).isEqualTo(15.5);
         assertThat(tour.getEstimatedTime()).isEqualTo(180);
-        assertThat(tour.getMapImagePath()).isEqualTo("http://maps.example/1");
+        assertThat(tour.getRouteGeometry()).isEqualTo("http://maps.example/1");
     }
 
     @Test
@@ -49,6 +49,36 @@ class TourMapperTest {
         assertThat(tour.getId()).isEqualTo(1L); // id is untouched by update
         assertThat(tour.getName()).isEqualTo("New Name");
         assertThat(tour.getUser()).isEqualTo(user);
+    }
+
+    @Test
+    void updateEntity_preservesExistingRouteGeometry_whenDtoRouteGeometryIsNull() {
+        Tour tour = new Tour();
+        tour.setRouteGeometry("existing-route-data");
+        User user = new User();
+
+        TourRequestDto dto = new TourRequestDto(
+                "New Name", "New description", "A", "B", "bike", 5.0, 30, null
+        );
+
+        TourMapper.updateEntity(tour, dto, user);
+
+        assertThat(tour.getRouteGeometry()).isEqualTo("existing-route-data");
+    }
+
+    @Test
+    void updateEntity_overwritesRouteGeometry_whenDtoProvidesNewValue() {
+        Tour tour = new Tour();
+        tour.setRouteGeometry("old-route-data");
+        User user = new User();
+
+        TourRequestDto dto = new TourRequestDto(
+                "New Name", "New description", "A", "B", "bike", 5.0, 30, "new-route-data"
+        );
+
+        TourMapper.updateEntity(tour, dto, user);
+
+        assertThat(tour.getRouteGeometry()).isEqualTo("new-route-data");
     }
 
     @Test
