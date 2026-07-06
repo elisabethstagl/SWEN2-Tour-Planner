@@ -1,10 +1,10 @@
-import {Component} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {Router, RouterLink} from '@angular/router';
 import {AuthService} from '../../service/auth-service';
 import {MatCard, MatCardContent, MatCardHeader, MatCardTitle} from '@angular/material/card';
-import {MatFormField, MatLabel} from '@angular/material/form-field';
+import {MatError, MatFormField, MatLabel} from '@angular/material/form-field';
 import {MatInput} from '@angular/material/input';
 import {MatButton} from '@angular/material/button';
 
@@ -22,7 +22,8 @@ import {MatButton} from '@angular/material/button';
     MatFormField,
     MatLabel,
     MatInput,
-    MatButton
+    MatButton,
+    MatError
   ],
   templateUrl: './register.html',
   styleUrl: './register.css',
@@ -34,10 +35,8 @@ export class Register {
   confirmPassword = '';
   errorMessage = '';
 
-  constructor(
-    private authService: AuthService,
-    private router: Router
-  ) {}
+  private authService = inject(AuthService);
+  private router = inject(Router);
 
   register(): void {
     this.errorMessage = '';

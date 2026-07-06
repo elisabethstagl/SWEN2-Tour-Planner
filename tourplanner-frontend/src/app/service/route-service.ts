@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
@@ -21,7 +21,7 @@ export class RouteService {
 
   private apiUrl = 'http://localhost:8080/api/routes';
 
-  constructor(private http: HttpClient) {}
+  private readonly http = inject(HttpClient);
 
   calculateRoute(request: RouteRequest): Observable<RouteResponse> {
     return this.http.post<RouteResponse>(`${this.apiUrl}/calculate`, request);

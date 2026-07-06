@@ -4,7 +4,6 @@ import {Tour} from '../../models/tour';
 import {MatChipsModule} from '@angular/material/chips';
 import {MatIcon} from '@angular/material/icon';
 import {NgClass} from '@angular/common';
-import {MatFabButton} from '@angular/material/button';
 import {MatButtonModule} from '@angular/material/button';
 
 @Component({
@@ -24,22 +23,22 @@ export class TourListItem {
     this.router.navigate(['/tour-detail', this.tour.id]);
   }
 
-  getTransportLabel(type: string): string {
-    switch (type) {
-      case 'bike':
-        return 'Bike';
-      case 'walk':
-        return 'Walk';
-      case 'hike':
-        return 'Hike';
-      case 'car':
-        return 'Car';
-      case 'wheelchair':
-        return 'Wheelchair';
-      default:
-        return type;
-    }
-  }
+  // getTransportLabel(type: string): string {
+  //   switch (type) {
+  //     case 'bike':
+  //       return 'Bike';
+  //     case 'walk':
+  //       return 'Walk';
+  //     case 'hike':
+  //       return 'Hike';
+  //     case 'car':
+  //       return 'Car';
+  //     case 'wheelchair':
+  //       return 'Wheelchair';
+  //     default:
+  //       return type;
+  //   }
+  // }
 
   getTransportIcon(type: string): string {
     switch (type) {

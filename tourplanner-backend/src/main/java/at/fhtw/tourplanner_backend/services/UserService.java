@@ -33,7 +33,7 @@ public class UserService {
             throw new DuplicateResourceException("Email already in use: " + dto.getEmail());
         }
 
-
+        // password hashing before saving to database
         String encodedPassword = passwordEncoder.encode(dto.getPassword());
         User user = UserMapper.toEntity(dto, encodedPassword);
         User savedUser = userRepository.save(user);

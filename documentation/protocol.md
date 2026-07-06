@@ -341,7 +341,7 @@ Although the project fulfills the required functionality, several improvements c
 
 ## Unit Tests
 
-The backend is tested with 75 JUnit tests. Tests use Mockito to mock repositories and services, so each test exercises only the logic of the class under test, no database or Spring context is needed.
+The backend is tested with 73 JUnit tests. Tests use Mockito to mock repositories and services, so each test exercises only the logic of the class under test, no database or Spring context is needed.
 
 **Why these classes were chosen:**
 
@@ -371,26 +371,27 @@ The backend is tested with 75 JUnit tests. Tests use Mockito to mock repositorie
 
 #### Final Submission
 
-| Task / Feature                                                  | Time (h) |
-|-----------------------------------------------------------------|:--------:|
-| Leaflet Integration                                             |   4.0    |
-| Research (Leaflet, ORS, Flyway, Log4j2, JWT, Spring Security…)  |  10.0    |
-| Database and Flyway                                             |   5.0    |
-| Backend Setup                                                   |   3.5    |
-| Backend Development                                             |   6.5    |
-| Frontend–Backend Communication                                  |   2.0    |
-| Authentication (Login)                                          |   5.5    |
-| Authorization                                                   |   3.0    |
-| OpenRouteService Integration                                    |   7.5    |
-| Log4j2 Integration                                              |   1.5    |
-| Environment Configuration (.env)                                |   1.0    |
-| Computed Tour Attributes                                        |   2.0    |
-| Full-Text Search                                                |   3.0    |
-| UI Redesign                                                     |   3.0    |
-| Final Code Improvements                                         |   2.0    |
-| Final Protocol                                                  |   2.5    |
-| Code Documentation and Comments                                 |   1.0    |
-| **Subtotal**                                                    | **63.0** |
+| Task / Feature                                                 | Time (h) |
+|----------------------------------------------------------------|:--------:|
+| Leaflet Integration                                            |   4.0    |
+| Research (Leaflet, ORS, Flyway, Log4j2, JWT, Spring Security…) |   10.0   |
+| Database and Flyway                                            |   5.0    |
+| Backend Setup                                                  |   3.5    |
+| Backend Development                                            |   6.5    |
+| Frontend–Backend Communication                                 |   2.0    |
+| Authentication (Login)                                         |   5.5    |
+| Authorization                                                  |   3.0    |
+| OpenRouteService Integration                                   |   7.5    |
+| Log4j2 Integration                                             |   1.5    |
+| Environment Configuration (.env)                               |   1.0    |
+| Computed Tour Attributes                                       |   2.0    |
+| Full-Text Search                                               |   3.0    |
+| UI Redesign                                                    |   3.0    |
+| Final Code Improvements                                        |   2.0    |
+| Final Protocol                                                 |   2.5    |
+| Code Documentation and Comments                                |   1.0    |
+| Bugfixing                                                      |   4.0    |
+| **Subtotal**                                                   | **67.0** |
 
 
 
@@ -422,5 +423,5 @@ The backend is tested with 75 JUnit tests. Tests use Mockito to mock repositorie
 
 | Contributor     |      Hours |
 |-----------------|-----------:|
-| Elisabeth Stagl | **82.5 h** |
+| Elisabeth Stagl | **86.5 h** |
 | Valeriia Sineva | **32.0 h** |

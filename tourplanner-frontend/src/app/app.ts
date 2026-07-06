@@ -15,8 +15,11 @@ export class App implements OnDestroy {
   private readonly subscription: Subscription;
 
   constructor(private router: Router) {
+    // splits URL for checking the route -> for header visibility or FullScreenPage (no padding, padding)
     this.currentUrl.set(this.router.url.split('?')[0]);
 
+
+    // Observable subscription with NavigationEnd to filter the last part of the URL
     this.subscription = this.router.events
       .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
       .subscribe(event => this.currentUrl.set(event.urlAfterRedirects.split('?')[0]));

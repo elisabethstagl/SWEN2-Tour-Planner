@@ -23,9 +23,16 @@
             name="email"
             type="email"
             [(ngModel)]="email"
+            #emailModel="ngModel"
             required
+            email
           />
         </mat-form-field>
+        @if (emailModel.invalid && emailModel.touched) {
+          <mat-error>
+            Please enter a valid email address.
+          </mat-error>
+        }
 
         <mat-form-field appearance="outline">
           <mat-label>Password</mat-label>

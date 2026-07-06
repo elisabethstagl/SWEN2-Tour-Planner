@@ -1,15 +1,9 @@
-import {Injectable} from "@angular/core";
+import {inject, Injectable} from "@angular/core";
 import {HttpClient} from '@angular/common/http';
-import { Observable } from "rxjs";
+import {Observable} from "rxjs";
 
 export interface AuthResponse {
   token: string;
-}
-
-export interface RegisterRequest {
-  username: string;
-  email: string;
-  password: string;
 }
 
 @Injectable({
@@ -20,7 +14,7 @@ export class AuthService {
   private tokenValidationUrl = 'http://localhost:8080/api/token';
   private usersApiUrl = 'http://localhost:8080/api/users';
 
-  constructor(private http: HttpClient) {}
+  private readonly http = inject(HttpClient);
 
   login(username: string, password: string) {
     return this.http.post<AuthResponse>(`${this.authApiUrl}/login`, {

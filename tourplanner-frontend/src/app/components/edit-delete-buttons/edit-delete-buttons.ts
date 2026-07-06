@@ -1,6 +1,6 @@
 import {Component, output} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
-import {MatFabButton, MatMiniFabButton} from '@angular/material/button';
+import {MatMiniFabButton} from '@angular/material/button';
 
 @Component({
   selector: 'app-edit-delete-buttons',
