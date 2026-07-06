@@ -6,7 +6,11 @@ import {HttpInterceptorFn} from '@angular/common/http';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
-  if (req.url.includes('/api/auth/login') || req.url.includes('/api/users')) {
+  // Only login and registration happen before a token exists
+  const isLogin = req.method === 'POST' && req.url.endsWith('/api/auth/login');
+  const isRegister = req.method === 'POST' && req.url.endsWith('/api/users');
+
+  if (isLogin || isRegister) {
     return next(req);
   }
 

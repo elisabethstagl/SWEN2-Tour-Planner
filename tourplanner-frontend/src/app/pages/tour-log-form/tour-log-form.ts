@@ -71,7 +71,10 @@ export class TourLogForm {
         const existingLog = this.tourService.logs().find(l => l.id === lId);
         if (existingLog) {
           this.logModel.set({...existingLog});
-          this.pickerDate.set(new Date(existingLog.date));
+
+          const [year, month, day] = existingLog.date.split('-').map(Number);
+          this.pickerDate.set(new Date(year, month - 1, day));
+
           const [hrs, mins] = existingLog.time.split(':');
           const d = new Date();
           d.setHours(+hrs, +mins);
@@ -95,7 +98,14 @@ export class TourLogForm {
 
   updateDate(d: Date | null) {
     this.pickerDate.set(d);
-    this.updateField('date', d?.toISOString().split('T')[0] || '');
+    this.updateField('date', d ? this.toLocalDateString(d) : '');
+  }
+
+  private toLocalDateString(d: Date): string {
+    const year = d.getFullYear();
+    const month = (d.getMonth() + 1).toString().padStart(2, '0');
+    const day = d.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
   updateTime(t: Date | null) {
