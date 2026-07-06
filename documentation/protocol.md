@@ -297,7 +297,8 @@ The imported tours' owner always comes from the authenticated user in the securi
 The whole `importTours()` call is wrapped in a single `@Transactional` block. If any tour or log in a large import file fails partway through, the entire operation is rolled back rather than leaving a half-imported, inconsistent result.
 
 
-## Unique Feature: Transport Type Filtering
+## Unique Features
+### Transport Type Filtering
 
 As a unique feature, the application allows users to filter tours by their transport type.
 
@@ -305,6 +306,10 @@ Each tour is assigned a transport type (e.g., walking, hiking, cycling or drivin
 This feature improves the overall usability of the application, especially for users who manage a larger number of tours. Instead of browsing through all available tours, users can immediately focus on tours that match their preferred mode of transportation.
 
 From a technical perspective, the selected transport type is used as an additional filter criterion in the frontend and the displayed tour list is updated dynamically. The transport type is also shown as part of every tour card, providing important information at a glance.
+
+### Favourites
+As an additional feature, users can mark individual tours as favorites via a heart icon and filter the list to favorited tours only, both filters (favourites and transport type) can be combined at the same time.
+Favoriting is implemented as a single boolean flag per tour, updated via a `PATCH /api/tours/{id}/favorite` request.
 
 ## Implemented Design Pattern: Facade Pattern
 
@@ -341,7 +346,7 @@ Although the project fulfills the required functionality, several improvements c
 
 ## Unit Tests
 
-The backend is tested with 73 JUnit tests. Tests use Mockito to mock repositories and services, so each test exercises only the logic of the class under test, no database or Spring context is needed.
+The backend is tested with 75 JUnit tests. Tests use Mockito to mock repositories and services, so each test exercises only the logic of the class under test, no database or Spring context is needed.
 
 **Why these classes were chosen:**
 
@@ -408,15 +413,17 @@ The backend is tested with 73 JUnit tests. Tests use Mockito to mock repositorie
 
 
 #### Final Submission
-| Task / Feature                                                              | Time (h) | 
-|:----------------------------------------------------------------------------|:--------:|
-| Backend Refactoring & Bugfixing                                             |   5.0    |
-| Search                                                                      |   1.0    |
-| Unit Tests                                                                  |   7.0    |
-| Merge Conflict Resolving                                                    |   2.0    |
-| Import/Export                                                               |   5.5    |
-| Protocol                                                                    |   1.5    |
-| **Subtotal**                                                                |  **22**  |
+| Task / Feature                   | Time (h) | 
+|:---------------------------------|:--------:|
+| Backend Refactoring & Bugfixing  |   5.0    |
+| Frontend Refactoring & Bugfixing |   1.5    |
+| Merge Conflict Resolving         |   2.0    |
+| Search                           |   1.0    |
+| Favourites                       |   4.5    |
+| Import/Export                    |   5.5    |
+| Unit Tests                       |   7.0    |
+| Protocol                         |   1.5    |
+| **Subtotal**                     |  **28**  |
 
 
 ### Total Time
@@ -424,4 +431,4 @@ The backend is tested with 73 JUnit tests. Tests use Mockito to mock repositorie
 | Contributor     |      Hours |
 |-----------------|-----------:|
 | Elisabeth Stagl | **86.5 h** |
-| Valeriia Sineva | **32.0 h** |
+| Valeriia Sineva | **38.0 h** |

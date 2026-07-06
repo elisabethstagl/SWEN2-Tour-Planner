@@ -21,4 +21,5 @@ public class TourResponseDto {
     private String routeGeometry;
     private Integer popularity;
     private Double childFriendliness;
+    private boolean favorite;
 }

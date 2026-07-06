@@ -4,6 +4,14 @@
   gap: 4px;
 }
 
+.favorites-filter-button {
+  color: #bdbdbd;
+}
+
+.favorites-filter-button.favorited {
+  color: #e63950;
+}
+
 .active-filter {
   background: #eceff1 !important;
   font-weight: 600;

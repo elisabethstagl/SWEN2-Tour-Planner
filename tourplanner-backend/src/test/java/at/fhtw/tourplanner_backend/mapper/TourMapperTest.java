@@ -91,6 +91,7 @@ class TourMapperTest {
         tour.setName("Vienna Woods");
         tour.setPopularity(5);
         tour.setChildFriendliness(87.5);
+        tour.setFavorite(true);
 
         TourResponseDto dto = TourMapper.toResponseDto(tour);
 
@@ -98,5 +99,6 @@ class TourMapperTest {
         assertThat(dto.getUserId()).isEqualTo(2L);
         assertThat(dto.getPopularity()).isEqualTo(5);
         assertThat(dto.getChildFriendliness()).isEqualTo(87.5);
+        assertThat(dto.isFavorite()).isTrue();
     }
 }

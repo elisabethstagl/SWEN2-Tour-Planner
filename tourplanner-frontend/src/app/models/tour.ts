@@ -14,4 +14,5 @@ export interface Tour {
   routeGeometry?: [number, number][] | null;
   popularity?: number;
   childFriendliness?: number | null;
+  favorite?: boolean;
 }

@@ -5,6 +5,7 @@ import {MatChipsModule} from '@angular/material/chips';
 import {MatIcon} from '@angular/material/icon';
 import {NgClass} from '@angular/common';
 import {MatButtonModule} from '@angular/material/button';
+import {TourService} from '../../service/tour-service';
 
 @Component({
   selector: 'app-tour-list-item',
@@ -18,9 +19,15 @@ export class TourListItem {
   @Input({required: true}) tour!: Tour;
 
   private readonly router = inject(Router);
+  private readonly tourService = inject(TourService);
 
   openTour() {
     this.router.navigate(['/tour-detail', this.tour.id]);
+  }
+
+  toggleFavorite(event: MouseEvent): void {
+    event.stopPropagation();
+    this.tourService.toggleFavorite(this.tour.id);
   }
 
   // getTransportLabel(type: string): string {

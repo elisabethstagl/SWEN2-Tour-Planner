@@ -10,6 +10,14 @@
     </button>
 
     <button
+      class="favorites-filter-button"
+      [class.favorited]="showFavoritesOnly()"
+      matIconButton
+      (click)="toggleFavoritesOnly()">
+      <mat-icon>{{ showFavoritesOnly() ? 'favorite' : 'favorite_border' }}</mat-icon>
+    </button>
+
+    <button
       matIconButton
       (click)="onExport()"
       aria-label="Export tours">

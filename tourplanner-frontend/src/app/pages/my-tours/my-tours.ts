@@ -30,6 +30,7 @@ export class MyToursComponent {
   readonly tours = this.tourService.tours;
   readonly error = this.tourService.error;
   readonly selectedTransportType = signal<TransportType | 'all'>('all');
+  readonly showFavoritesOnly = signal(false);
 
   readonly transportTypes: TransportType[] = [
     'bike',
@@ -41,12 +42,17 @@ export class MyToursComponent {
 
   readonly filteredTours = computed(() => {
     const filter = this.selectedTransportType();
+    const favoritesOnly = this.showFavoritesOnly();
 
-    if (filter === 'all') {
-      return this.tours();
+    let tours = filter === 'all'
+      ? this.tours()
+      : this.tours().filter(tour => tour.transportType === filter);
+
+    if (favoritesOnly) {
+      tours = tours.filter(tour => tour.favorite);
     }
 
-    return this.tours().filter(tour => tour.transportType === filter);
+    return tours;
   });
 
   constructor() {
@@ -56,6 +62,10 @@ export class MyToursComponent {
 
   setTransportFilter(type: TransportType | 'all'): void {
     this.selectedTransportType.set(type);
+  }
+
+  toggleFavoritesOnly(): void {
+    this.showFavoritesOnly.update(value => !value);
   }
 
   onExport(): void {

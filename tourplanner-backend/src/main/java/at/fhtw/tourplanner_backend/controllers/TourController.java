@@ -50,4 +50,9 @@ public class TourController {
         tourService.deleteTour(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PatchMapping("/{id}/favorite")
+    public ResponseEntity<TourResponseDto> toggleFavorite(@PathVariable Long id) {
+        return ResponseEntity.ok(tourService.toggleFavorite(id));
+    }
 }
