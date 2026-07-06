@@ -1,0 +1,44 @@
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.active-filter {
+  background: #eceff1 !important;
+  font-weight: 600;
+}
+
+.bike-selected {
+  background: rgba(97, 182, 99, 0.25) !important;
+  color: #61b663 !important;
+}
+
+.walk-selected {
+  background: rgba(152, 104, 211, 0.25) !important;
+  color: #9868d3 !important;
+}
+
+.hike-selected {
+  background: rgba(158, 132, 122, 0.25) !important;
+  color: #9e847a !important;
+}
+
+.car-selected {
+  background: rgba(216, 98, 94, 0.25) !important;
+  color: #d8625e !important;
+}
+
+.wheelchair-selected {
+  background: rgba(96, 157, 221, 0.25) !important;
+  color: #609ddd !important;
+}
+
+.bike-selected .mat-icon,
+.walk-selected .mat-icon,
+.hike-selected .mat-icon,
+.car-selected .mat-icon,
+.wheelchair-selected .mat-icon,
+.active-filter .mat-icon {
+  color: inherit !important;
+}

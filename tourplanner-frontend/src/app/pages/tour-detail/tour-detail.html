@@ -1,0 +1,59 @@
+<app-layout>
+  @if (tour(); as selectedTour) {
+    <ng-container left-header>
+      <div class="title-row">
+
+        <h2>{{ selectedTour.name }}</h2>
+
+        <button class="transport-chip" matMiniFab [ngClass]="selectedTour.transportType">
+          <mat-icon iconPositionEnd>{{ getTransportIcon(selectedTour.transportType) }}</mat-icon>
+        </button>
+
+      </div>
+    </ng-container>
+  }
+
+  <app-edit-delete-buttons
+    left-header
+    (editClicked)="onEditTour()"
+    (deleteClicked)="onDeleteTour()">
+  </app-edit-delete-buttons>
+
+  @if (tour(); as selectedTour) {
+    <ng-container left-content>
+      <app-tour-details-card
+        [tour]="selectedTour">
+      </app-tour-details-card>
+
+      <section class="logs-section">
+        <h3>Tour Logs</h3>
+
+        @if (logs().length > 0) {
+          @for (log of logs(); track log.id) {
+            <app-tour-log-card
+              [log]="log"
+              (edit)="onEditLog($event)"
+              (delete)="onDeleteLog($event)">
+            </app-tour-log-card>
+          }
+        } @else {
+          <p>No logs yet.</p>
+        }
+      </section>
+
+      <a class="add-tour-log-button"
+         matButton="tonal"
+         [routerLink]="['/tour-detail', selectedTour.id, 'new-log']">+ New Log
+      </a>
+    </ng-container>
+  } @else {
+    <ng-container left-content>
+      <p>Tour not found.</p>
+    </ng-container>
+  }
+
+  @if (tour(); as selectedTour) {
+    <app-map right-content [routePoints]="routePoints()"></app-map>
+  }
+
+</app-layout>

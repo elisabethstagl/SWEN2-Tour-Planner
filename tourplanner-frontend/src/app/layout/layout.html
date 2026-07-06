@@ -1,0 +1,15 @@
+<div class="grid-layout">
+  <div class="left-panel">
+    <div class="left-header">
+      <ng-content select="[left-header]"></ng-content>
+    </div>
+
+    <div class="left-content">
+      <ng-content select="[left-content]"></ng-content>
+    </div>
+  </div>
+
+  <div class="right-panel">
+    <ng-content select="[right-content]"></ng-content>
+  </div>
+</div>

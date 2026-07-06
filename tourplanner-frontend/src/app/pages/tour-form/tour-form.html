@@ -1,0 +1,122 @@
+@if (embedded()) {
+  <h2>{{ id() ? 'Edit Tour' : 'New Tour' }}</h2>
+
+  <ng-container *ngTemplateOutlet="formContent"></ng-container>
+} @else {
+  <app-layout>
+    <h2 left-header>{{ id() ? 'Edit Tour' : 'New Tour' }}</h2>
+
+    <ng-container left-content *ngTemplateOutlet="formContent"></ng-container>
+
+    <app-map right-content></app-map>
+  </app-layout>
+}
+
+<ng-template #formContent>
+  <div class="field">
+    <mat-form-field>
+      <mat-label>Tour Name</mat-label>
+      <input
+        matInput
+        [ngModel]="tourModel().name"
+        (ngModelChange)="updateField('name', $event)"
+      >
+    </mat-form-field>
+    @if (nameError()) {
+      <div class="field-error">{{ nameError() }}</div>
+    }
+  </div>
+
+  <div class="field">
+    <mat-form-field>
+      <mat-label>Description</mat-label>
+      <textarea
+        matInput
+        [ngModel]="tourModel().description"
+        (ngModelChange)="updateField('description', $event)"
+      ></textarea>
+    </mat-form-field>
+    @if (descriptionError()) {
+      <div class="field-error">{{ descriptionError() }}</div>
+    }
+  </div>
+
+  <div class="field">
+    <mat-form-field>
+      <mat-label>From</mat-label>
+      <input
+        matInput
+        [ngModel]="tourModel().from"
+        (ngModelChange)="updateField('from', $event)"
+      >
+    </mat-form-field>
+    @if (fromError()) {
+      <div class="field-error">{{ fromError() }}</div>
+    }
+  </div>
+
+  <div class="field">
+    <mat-form-field>
+      <mat-label>To</mat-label>
+      <input
+        matInput
+        [ngModel]="tourModel().to"
+        (ngModelChange)="updateField('to', $event)"
+      >
+    </mat-form-field>
+    @if (toError()) {
+      <div class="field-error">{{ toError() }}</div>
+    }
+  </div>
+
+  <div class="field">
+    <mat-form-field>
+      <mat-label>Transport Type</mat-label>
+      <mat-select
+        [ngModel]="tourModel().transportType"
+        (ngModelChange)="updateField('transportType', $event)"
+      >
+        @for (type of transportTypes; track type) {
+          <mat-option [value]="type">
+            {{ type }}
+          </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <button
+    class="calculate-route-button"
+    matButton="tonal"
+    type="button"
+    (click)="calculateRoute()"
+    [disabled]="fromError() || toError()"
+  >
+    Calculate Route
+  </button>
+
+  <div class="route-summary">
+    <div class="summary-item">
+      <span class="summary-label">Distance</span>
+      <strong>{{ formatDistance(tourModel().distance) || '-' }}</strong>
+    </div>
+
+    <div class="summary-item">
+      <span class="summary-label">Estimated Time</span>
+      <strong>{{ formatEstimatedTime(tourModel().estimatedTime) || '-' }}</strong>
+    </div>
+  </div>
+
+  @if (error()) {
+    <p class="error-message">{{ error() }}</p>
+  }
+
+  <button
+    matButton="tonal"
+    type="button"
+    (click)="saveTour()"
+    [disabled]="!canSubmit()"
+  >
+    {{ id() ? 'Update Tour' : 'Save Tour' }}
+  </button>
+</ng-template>

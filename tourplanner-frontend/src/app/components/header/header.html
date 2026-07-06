@@ -1,0 +1,47 @@
+<mat-toolbar class="header-toolbar">
+  <div class="logo" routerLink="/app">
+    <img src="/assets/map.png" alt="Logo" />
+    <h3>RouteMate</h3>
+  </div>
+
+  <div class="search-wrapper">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Search tours</mat-label>
+      <input
+        matInput
+        type="text"
+        placeholder="Name, location, comment..."
+        (input)="onSearch($any($event.target).value)"
+      />
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+  </div>
+
+  <nav class="nav desktop-nav">
+    <a matButton="tonal" routerLink="/my-tours" routerLinkActive="active">
+      My Tours
+    </a>
+
+    <button matButton="tonal" type="button" (click)="logout()">
+      Logout
+    </button>
+  </nav>
+
+  <button
+    class="mobile-menu-button"
+    mat-icon-button
+    [matMenuTriggerFor]="mobileMenu"
+    aria-label="Open navigation menu">
+    <mat-icon>menu</mat-icon>
+  </button>
+
+  <mat-menu #mobileMenu="matMenu">
+    <button mat-menu-item routerLink="/my-tours">
+      <span>My Tours</span>
+    </button>
+
+    <button mat-menu-item type="button" (click)="logout()">
+      <span>Logout</span>
+    </button>
+  </mat-menu>
+</mat-toolbar>

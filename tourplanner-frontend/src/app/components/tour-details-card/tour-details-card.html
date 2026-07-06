@@ -1,0 +1,42 @@
+<div class="tour-detail-grid">
+  <div>
+    <strong>Description:</strong>
+    <p>{{ tour.description }}</p>
+  </div>
+
+  <div>
+    <strong>From:</strong>
+    <p>{{ tour.from }}</p>
+  </div>
+
+  <div>
+    <strong>To:</strong>
+    <p>{{ tour.to }}</p>
+  </div>
+
+  <div>
+    <strong>Transport Type:</strong>
+    <p>{{ tour.transportType }}</p>
+  </div>
+
+  <div>
+    <strong>Distance:</strong>
+    <p>{{ formatDistance(tour.distance) }}</p>
+  </div>
+
+  <div>
+    <strong>Estimated Time:</strong>
+    <p>{{ formatEstimatedTime(tour.estimatedTime) }}</p>
+  </div>
+
+  <div>
+    <strong>Popularity:</strong>
+    <p>{{ tour.popularity ?? 0 }}</p>
+  </div>
+
+  <div>
+    <strong>Child-Friendliness:</strong>
+    <p>{{ formatChildFriendliness(tour.childFriendliness) }}</p>
+  </div>
+
+</div>

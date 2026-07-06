@@ -1,0 +1,77 @@
+<app-layout>
+  <h2 left-header>My Tours</h2>
+
+  <div left-header class="header-actions">
+    <button
+      matIconButton
+      [matMenuTriggerFor]="filterMenu"
+      aria-label="Filter tours">
+      <mat-icon>filter_list</mat-icon>
+    </button>
+
+    <button
+      matIconButton
+      (click)="onExport()"
+      aria-label="Export tours">
+      <mat-icon>download</mat-icon>
+    </button>
+
+    <button
+      matIconButton
+      (click)="fileInput.click()"
+      aria-label="Import tours">
+      <mat-icon>upload</mat-icon>
+    </button>
+
+    <input
+      #fileInput
+      type="file"
+      accept="application/json,.json"
+      hidden
+      (change)="onImportFileSelected($event)">
+  </div>
+
+  <mat-menu #filterMenu="matMenu">
+
+    <!-- All -->
+    <button
+      mat-menu-item
+      [class.active-filter]="selectedTransportType() === 'all'"
+      (click)="setTransportFilter('all')">
+
+      <mat-icon>filter_list</mat-icon>
+      <span>All</span>
+
+    </button>
+
+    <!-- Transport Types -->
+    @for (type of transportTypes; track type) {
+      <button
+        mat-menu-item
+        [class.bike-selected]="type === 'bike' && isSelected(type)"
+        [class.walk-selected]="type === 'walk' && isSelected(type)"
+        [class.hike-selected]="type === 'hike' && isSelected(type)"
+        [class.car-selected]="type === 'car' && isSelected(type)"
+        [class.wheelchair-selected]="type === 'wheelchair' && isSelected(type)"
+        (click)="setTransportFilter(type)">
+
+        <mat-icon>{{ getTransportIcon(type) }}</mat-icon>
+        <span>{{ getTransportLabel(type) }}</span>
+
+      </button>
+    }
+
+  </mat-menu>
+
+  <div left-content>
+    @if (error()) {
+      <p class="error-message">{{ error() }}</p>
+    }
+
+    @for (tour of filteredTours(); track tour.id) {
+      <app-tour-list-item [tour]="tour"></app-tour-list-item>
+    } @empty {
+      <p>No tours available.</p>
+    }
+  </div>
+</app-layout>
