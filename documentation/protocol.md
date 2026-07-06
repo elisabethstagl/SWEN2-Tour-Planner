@@ -346,7 +346,7 @@ Although the project fulfills the required functionality, several improvements c
 
 ## Unit Tests
 
-The backend is tested with 73 JUnit tests. Tests use Mockito to mock repositories and services, so each test exercises only the logic of the class under test, no database or Spring context is needed.
+The backend is tested with 75 JUnit tests. Tests use Mockito to mock repositories and services, so each test exercises only the logic of the class under test, no database or Spring context is needed.
 
 **Why these classes were chosen:**
 
