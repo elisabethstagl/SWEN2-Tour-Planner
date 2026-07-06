@@ -16,6 +16,7 @@ type TourDto = {
   routeGeometry?: string | null;
   popularity?: number;
   childFriendliness?: number | null;
+  favorite?: boolean;
 };
 
 type TourLogDto = {
@@ -156,6 +157,21 @@ export class TourService {
     });
   }
 
+  toggleFavorite(id: number): void {
+    this._error.set('');
+
+    this.http.patch<TourDto>(`${this.apiUrl}/tours/${id}/favorite`, {}).subscribe({
+      next: savedTour => {
+        const frontendTour = this.convertTourDtoToTour(savedTour);
+
+        this._tours.update(tours =>
+          tours.map(tour => tour.id === frontendTour.id ? frontendTour : tour)
+        );
+      },
+      error: () => this._error.set('Could not update favorite.')
+    });
+  }
+
   getLogById(id: number) {
     return computed(() => this._logs().find(log => log.id === id) ?? null);
   }
@@ -281,7 +297,8 @@ export class TourService {
       estimatedTime: tourDto.estimatedTime,
       routeGeometry: this.parseRouteGeometry(tourDto.routeGeometry),
       popularity: tourDto.popularity,
-      childFriendliness: tourDto.childFriendliness
+      childFriendliness: tourDto.childFriendliness,
+      favorite: tourDto.favorite ?? false
     };
   }
 

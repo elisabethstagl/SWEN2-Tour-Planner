@@ -53,6 +53,9 @@ public class Tour {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
+    @Column(name = "is_favorite", nullable = false)
+    private boolean favorite;
+
     //field is not stored in the DB, only calculated and returned in JSON responses
     @Transient
     private Integer popularity;

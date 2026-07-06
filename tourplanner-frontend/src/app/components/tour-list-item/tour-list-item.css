@@ -14,3 +14,17 @@
   transform: translateY(-5px);
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
 }
+
+.title-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.favorite-button {
+  color: #bdbdbd;
+}
+
+.favorite-button.favorited {
+  color: #e63950;
+}

@@ -150,6 +150,30 @@ class TourServiceTest {
     }
 
     @Test
+    void toggleFavorite_setsFavoriteToTrue_whenTourWasNotFavorite() {
+        Tour tour = tourWith(1L, "Vienna Woods");
+        when(tourRepository.findByIdAndUserUsername(1L, USERNAME)).thenReturn(Optional.of(tour));
+        when(tourRepository.save(tour)).thenReturn(tour);
+
+        TourResponseDto result = tourService.toggleFavorite(1L);
+
+        assertThat(result.isFavorite()).isTrue();
+        assertThat(tour.isFavorite()).isTrue();
+    }
+
+    @Test
+    void toggleFavorite_setsFavoriteToFalse_whenTourWasAlreadyFavorite() {
+        Tour tour = tourWith(1L, "Vienna Woods");
+        tour.setFavorite(true);
+        when(tourRepository.findByIdAndUserUsername(1L, USERNAME)).thenReturn(Optional.of(tour));
+        when(tourRepository.save(tour)).thenReturn(tour);
+
+        TourResponseDto result = tourService.toggleFavorite(1L);
+
+        assertThat(result.isFavorite()).isFalse();
+    }
+
+    @Test
     void searchTours_returnsAllTours_whenQueryIsBlank() {
         Tour tour = tourWith(1L, "Vienna Woods");
         when(tourRepository.findAllByUserUsername(USERNAME)).thenReturn(List.of(tour));

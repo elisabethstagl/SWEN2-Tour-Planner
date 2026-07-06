@@ -84,6 +84,22 @@ public class TourService {
         return TourMapper.toResponseDto(withComputedFields(savedTour));
     }
 
+    public TourResponseDto toggleFavorite(Long id) {
+        String username = getCurrentUsername();
+
+        Tour tour = tourRepository.findByIdAndUserUsername(id, username)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Tour not found with id: " + id));
+
+        tour.setFavorite(!tour.isFavorite());
+
+        Tour savedTour = tourRepository.save(tour);
+
+        log.info("User '{}' set favorite={} for tour {}.", username, savedTour.isFavorite(), id);
+
+        return TourMapper.toResponseDto(withComputedFields(savedTour));
+    }
+
     public void deleteTour(Long id) {
         String username = getCurrentUsername();
 

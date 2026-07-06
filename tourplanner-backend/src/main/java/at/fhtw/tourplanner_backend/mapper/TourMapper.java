@@ -46,7 +46,8 @@ public class TourMapper {
             tour.getEstimatedTime(),
             tour.getRouteGeometry(),
             tour.getPopularity(),
-            tour.getChildFriendliness()
+            tour.getChildFriendliness(),
+            tour.isFavorite()
         );
     }
 }
