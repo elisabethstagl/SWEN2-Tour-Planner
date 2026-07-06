@@ -36,10 +36,10 @@
 
     <div class="field">
       <mat-form-field>
-        <mat-label>Duration</mat-label>
+        <mat-label>Total time (HH:mm)</mat-label>
         <input matInput [ngModel]="logModel().totalTime"
                (ngModelChange)="updateField('totalTime', $event)"
-               placeholder="7 days or 04:45">
+               placeholder="e.g. 04:45">
       </mat-form-field>
       @if (totalTimeError()) { <div class="field-error">{{ totalTimeError() }}</div> }
     </div>

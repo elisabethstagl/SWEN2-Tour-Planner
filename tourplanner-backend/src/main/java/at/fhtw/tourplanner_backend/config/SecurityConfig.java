@@ -30,11 +30,17 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
+
+                        // login and registration don't need a token / validation -> permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
+
+                        // any other requests need a token to access pages
                         .anyRequest().authenticated()
                 )
+
+                // adds the jwtAuthenticationFilter before the .authorizeHttpRequests, so checks JWT basically
                 .addFilterBefore(
                         jwtAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class

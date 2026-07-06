@@ -315,33 +315,16 @@ export class TourService {
   }
 
   private convertTimeStringToMinutes(value: string): number {
-    const lower = value.toLowerCase();
+    const match = value.trim().match(/^([0-9]+):([0-5][0-9])$/);
 
-    if (lower.includes('day')) {
-      const days = parseFloat(lower);
-
-      if (isNaN(days)) {
-        return 0;
-      }
-
-      return days * 24 * 60;
+    if (!match) {
+      throw new Error('Invalid duration format. Use HH:mm.');
     }
 
-    if (lower.includes(':')) {
-      const parts = lower.split(':');
-      const hours = Number(parts[0]);
-      const minutes = Number(parts[1]);
+    const hours = Number(match[1]);
+    const minutes = Number(match[2]);
 
-      return hours * 60 + minutes;
-    }
-
-    const hours = parseFloat(lower);
-
-    if (isNaN(hours)) {
-      return 0;
-    }
-
-    return hours * 60;
+    return hours * 60 + minutes;
   }
 
   private convertMinutesToTimeString(minutes: number): string {

@@ -118,7 +118,15 @@ export class TourLogForm {
 
   readonly totalTimeError = computed(() => {
     const v = this.logModel().totalTime.trim();
+
     if (!v) return 'Duration is required.';
+
+    const valid = /^([0-9]+):([0-5][0-9])$/.test(v);
+
+    if (!valid) {
+      return 'Use format HH:mm, for example 02:30.';
+    }
+
     return null;
   });
 

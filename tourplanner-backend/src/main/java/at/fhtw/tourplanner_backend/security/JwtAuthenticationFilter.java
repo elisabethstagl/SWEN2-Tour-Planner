@@ -25,6 +25,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserRepository userRepository;
 
+    // don't look for Authorization Header for paths: api/auth and api/users, just like in SecurityConfig, don't need tokens
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getServletPath();
@@ -47,12 +48,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
+        // extract token and username
         String token = authHeader.substring(7);
         String username = jwtService.extractUsername(token);
 
+
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            // checks if user still exists in DB (old token or user got deleted in the meantime)
             User user = userRepository.findByUsername(username).orElse(null);
 
+            // sets the security context, so Spring now knows user
             if (user != null && jwtService.isTokenValid(token, user.getUsername())) {
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(
