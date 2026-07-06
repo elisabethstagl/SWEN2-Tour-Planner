@@ -349,6 +349,17 @@ Although the project fulfills the required functionality, several improvements c
 
 ## Unit Tests
 
+The backend is tested with 73 JUnit tests across 14 test classes. Tests use Mockito to mock repositories and services, so each test exercises only the logic of the class under test — no database or Spring context is needed.
+
+**Why these classes were chosen:**
+
+- `TourService`, `TourLogService`, `UserService`, `TourImportExportService` – contain the core business logic, most importantly that a user may only ever see or modify their own tours and logs. Every method is tested both for the happy path and the "not owned by current user" case (`ResourceNotFoundException`). `TourImportExportServiceTest` also checks that imports are always assigned to the current user, and exports only return the current user's tours. `TourServiceTest` covers the full-text search.
+- `AuthService` – tested for correct login, unknown username, and wrong password, with the latter two deliberately returning the same exception (prevents username enumeration).
+- `JwtService` – security-critical: tests cover token generation/extraction and both valid and invalid token verification, since this logic is what the `JwtAuthenticationFilter` relies on for every request.
+- `TourStatsService` – popularity/child-friendliness are pure math with edge cases (no logs, incomplete logs, extreme values). Incorrect logic wouldn't crash, it would just silently produce a wrong score.
+- `TourMapper`, `TourLogMapper`, `UserMapper` – pure DTO↔entity mapping. Catches forgotten fields immediately instead of them silently disappearing between frontend and database.
+- `TourRequestDtoTest`, `TourLogRequestDtoTest`, `UserRequestDtoTest` – verify that Bean Validation annotations (`@NotBlank`, `@Positive`, `@Size`, …) actually reject invalid input before it reaches the database.
+
 ## Tracked Time
 
 ### Elisabeth Stagl
@@ -405,10 +416,11 @@ Although the project fulfills the required functionality, several improvements c
 
 #### Final Submission
 
-| Task / Feature       | Time (h) |
-|----------------------|:--------:|
-| Example of task here |   0.0    |
-| **Subtotal**         | **0.0**  |
+| Task / Feature  | Time (h) |
+|-----------------|:--------:|
+| Import / Export |   x.x    |
+| Unit Tests      |   x.x    |
+| **Subtotal**    | **x.x**  |
 
 
 
